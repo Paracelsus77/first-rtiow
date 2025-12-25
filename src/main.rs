@@ -1,7 +1,16 @@
+use glam::Vec3;
 use minifb::{Key, ScaleMode, Window, WindowOptions};
 
 const WIDTH: usize = 1280;
 const HEIGHT: usize = 720;
+
+fn vec3_to_u32(color: Vec3) -> u32 {
+    let r = (color.x * 255.999) as u32;
+    let g = (color.y * 255.999) as u32;
+    let b = (color.z * 255.999) as u32;
+
+    (r << 16) | (g << 8) | b
+}
 
 fn main() {
     let mut buffer = vec![0u32; WIDTH * HEIGHT];
@@ -36,15 +45,13 @@ fn main() {
         if redraw_needed {
             for j in 0..height {
                 for i in 0..width {
-                    let r = i as f64 / (width - 1) as f64;
-                    let g = j as f64 / (height - 1) as f64;
-                    let b = 0.0;
+                    let color = Vec3::new(
+                        i as f32 / (width - 1) as f32,
+                        j as f32 / (height - 1) as f32,
+                        0.0,
+                    );
 
-                    let ir = (r * 255.999) as u32;
-                    let ig = (g * 255.999) as u32;
-                    let ib = (b * 255.999) as u32;
-
-                    buffer[i + j * width] = (ir << 16) | (ig << 8) | ib
+                    buffer[i + j * width] = vec3_to_u32(color);
                 }
             }
             redraw_needed = false;
@@ -53,6 +60,5 @@ fn main() {
         window
             .update_with_buffer(&buffer, new_size.0, new_size.1)
             .unwrap();
-
     }
 }
