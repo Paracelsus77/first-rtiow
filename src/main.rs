@@ -22,28 +22,37 @@ fn main() {
 
     let mut size = (0, 0);
 
+    let mut redraw_needed = true;
+
     while window.is_open() && !window.is_key_down(Key::Escape) {
         let new_size = window.get_size();
         if new_size != size {
             size = new_size;
             buffer.resize(size.0 * size.1, 0);
+            redraw_needed = true;
         }
+        let (width, height) = new_size;
 
-        for j in 0..HEIGHT {
-            for i in 0..WIDTH {
-                let r = i as f64 / (WIDTH - 1) as f64;
-                let g = j as f64 / (HEIGHT - 1) as f64;
-                let b = 0.0;
+        if redraw_needed {
+            for j in 0..height {
+                for i in 0..width {
+                    let r = i as f64 / (width - 1) as f64;
+                    let g = j as f64 / (height - 1) as f64;
+                    let b = 0.0;
 
-                let ir = (r * 255.999) as u32;
-                let ig = (g * 255.999) as u32;
-                let ib = (b * 255.999) as u32;
+                    let ir = (r * 255.999) as u32;
+                    let ig = (g * 255.999) as u32;
+                    let ib = (b * 255.999) as u32;
 
-                buffer[i + j * WIDTH] = (ir << 16) | (ig << 8) | ib
+                    buffer[i + j * width] = (ir << 16) | (ig << 8) | ib
+                }
             }
+            redraw_needed = false;
         }
+
         window
             .update_with_buffer(&buffer, new_size.0, new_size.1)
             .unwrap();
+
     }
 }
