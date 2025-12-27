@@ -4,6 +4,26 @@ use minifb::{Key, ScaleMode, Window, WindowOptions};
 const WIDTH: usize = 1280;
 const HEIGHT: usize = 720;
 
+struct Ray {
+    origin: Vec3,
+    direction: Vec3,
+}
+
+impl Ray {
+    #[expect(unused)]
+    pub fn at(&self, t: f32) -> Vec3 {
+        self.origin + t * self.direction
+    }
+}
+
+#[expect(unused)]
+fn ray_color(ray: Ray) -> Vec3 {
+    let unit_direction = ray.direction.normalize();
+    let a = 0.5 * (unit_direction.y + 1.0);
+    // (1.0 - a) * Vec3::splat(1.0) + a * Vec3::new(0.5, 0.7, 1.0)
+    Vec3::ONE.lerp(Vec3::new(0.5, 0.7, 1.0), a)
+}
+
 fn vec3_to_u32(color: Vec3) -> u32 {
     let r = (color.x * 255.999) as u32;
     let g = (color.y * 255.999) as u32;
@@ -20,7 +40,7 @@ fn main() {
         WIDTH,
         HEIGHT,
         WindowOptions {
-            resize: true,
+            resize: false,
             scale_mode: ScaleMode::UpperLeft,
             ..WindowOptions::default()
         },
@@ -29,17 +49,11 @@ fn main() {
 
     window.set_target_fps(100);
 
-    let mut size = (0, 0);
-
     let mut redraw_needed = true;
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
         let new_size = window.get_size();
-        if new_size != size {
-            size = new_size;
-            buffer.resize(size.0 * size.1, 0);
-            redraw_needed = true;
-        }
+
         let (width, height) = new_size;
 
         if redraw_needed {
