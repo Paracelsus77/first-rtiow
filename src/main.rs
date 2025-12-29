@@ -16,12 +16,24 @@ impl Ray {
     }
 }
 
-#[expect(unused)]
+fn hit_sphere(center: Vec3, radius: f32, r: &Ray) -> bool {
+    let oc = center - r.origin;
+    let a = r.direction.dot(r.direction);
+    let b = -2.0 * r.direction.dot(oc);
+    let c = oc.dot(oc) - radius * radius;
+    let discriminant = b * b - 4.0 * a * c;
+    if discriminant >= 0.0 { true } else { false }
+}
+
 fn ray_color(ray: Ray) -> Vec3 {
-    let unit_direction = ray.direction.normalize();
-    let a = 0.5 * (unit_direction.y + 1.0);
-    // (1.0 - a) * Vec3::splat(1.0) + a * Vec3::new(0.5, 0.7, 1.0)
-    Vec3::ONE.lerp(Vec3::new(0.5, 0.7, 1.0), a)
+    if hit_sphere(Vec3::new(0.0, 0.0, -1.0), 0.5, &ray) {
+        Vec3::new(1.0, 0.0, 0.0)
+    } else {
+        let unit_direction = ray.direction.normalize();
+        let a = 0.5 * (unit_direction.y + 1.0);
+        // (1.0 - a) * Vec3::splat(1.0) + a * Vec3::new(0.5, 0.7, 1.0)
+        Vec3::ONE.lerp(Vec3::new(0.5, 0.7, 1.0), a)
+    }
 }
 
 fn vec3_to_u32(color: Vec3) -> u32 {
@@ -86,9 +98,13 @@ fn main() {
         if redraw_needed {
             for j in 0..height {
                 for i in 0..width {
-                    let pixel_center = pixel00_loc + (i as f32 * pixel_delta_u) + (j as f32 * pixel_delta_v);
+                    let pixel_center =
+                        pixel00_loc + (i as f32 * pixel_delta_u) + (j as f32 * pixel_delta_v);
                     let ray_direction = pixel_center - camera_center;
-                    let r = Ray { origin: camera_center, direction: ray_direction};
+                    let r = Ray {
+                        origin: camera_center,
+                        direction: ray_direction,
+                    };
 
                     let pixel_color = ray_color(r);
                     buffer[i + j * width] = vec3_to_u32(pixel_color);
