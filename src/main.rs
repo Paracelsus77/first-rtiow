@@ -10,24 +10,31 @@ struct Ray {
 }
 
 impl Ray {
-    #[expect(unused)]
     pub fn at(&self, t: f32) -> Vec3 {
         self.origin + t * self.direction
     }
 }
 
-fn hit_sphere(center: Vec3, radius: f32, r: &Ray) -> bool {
-    let oc = center - r.origin;
-    let a = r.direction.length_squared();
-    let b = -2.0 * r.direction.dot(oc);
+fn hit_sphere(center: Vec3, radius: f32, ray: &Ray) -> f32 {
+    let oc = center - ray.origin;
+    let a = ray.direction.length_squared();
+    let h = ray.direction.dot(oc);
     let c = oc.length_squared() - radius * radius;
-    let discriminant = b * b - 4.0 * a * c;
-    discriminant >= 0.0 
+    let discriminant = h * h - a * c;
+    
+    if discriminant < 0.0 {
+        -1.0
+    } else {
+        (h - discriminant.sqrt()) /  a
+    }
+
 }
 
 fn ray_color(ray: Ray) -> Vec3 {
-    if hit_sphere(Vec3::new(0.0, 0.0, -1.0), 0.5, &ray) {
-        Vec3::new(1.0, 0.0, 0.0)
+    let t = hit_sphere(Vec3::new(0.0, 0.0, -1.0), 0.5, &ray);
+    if t > 0.0 {
+        let n = (ray.at(t) - Vec3::new(0.0, 0.0, -1.0)).normalize();
+        0.5 * (n + 1.0)  
     } else {
         let unit_direction = ray.direction.normalize();
         let a = 0.5 * (unit_direction.y + 1.0);
