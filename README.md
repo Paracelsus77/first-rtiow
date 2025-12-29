@@ -4,5 +4,5 @@ I suspect that it will take more than a weekend. Since I'm still learning Rust I
 
 To run it just download it and: 
 ```bash 
-cargo run
+cargo run --release
 ```

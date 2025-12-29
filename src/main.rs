@@ -18,11 +18,11 @@ impl Ray {
 
 fn hit_sphere(center: Vec3, radius: f32, r: &Ray) -> bool {
     let oc = center - r.origin;
-    let a = r.direction.dot(r.direction);
+    let a = r.direction.length_squared();
     let b = -2.0 * r.direction.dot(oc);
-    let c = oc.dot(oc) - radius * radius;
+    let c = oc.length_squared() - radius * radius;
     let discriminant = b * b - 4.0 * a * c;
-    if discriminant >= 0.0 { true } else { false }
+    discriminant >= 0.0 
 }
 
 fn ray_color(ray: Ray) -> Vec3 {
@@ -31,7 +31,6 @@ fn ray_color(ray: Ray) -> Vec3 {
     } else {
         let unit_direction = ray.direction.normalize();
         let a = 0.5 * (unit_direction.y + 1.0);
-        // (1.0 - a) * Vec3::splat(1.0) + a * Vec3::new(0.5, 0.7, 1.0)
         Vec3::ONE.lerp(Vec3::new(0.5, 0.7, 1.0), a)
     }
 }
