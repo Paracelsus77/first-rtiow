@@ -4,7 +4,7 @@ use minifb::{Key, ScaleMode, Window, WindowOptions};
 const WIDTH: usize = 1280;
 const _HEIGHT: usize = 720;
 
-struct Ray {
+pub struct Ray {
     origin: Vec3,
     direction: Vec3,
 }
@@ -14,6 +14,58 @@ impl Ray {
         self.origin + t * self.direction
     }
 }
+pub struct HitRecord {
+    p: Vec3,
+    normal: Vec3,
+    t: f32,
+    front_face: bool,
+}
+
+pub trait Hittable {
+    fn hit(&self, r: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord>;
+}
+
+struct Sphere {
+    center: Vec3,
+    radius: f32,
+}
+
+impl Hittable for Sphere {
+    fn hit(&self, r: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+        let oc = self.center - r.origin;
+        let a = r.direction.length_squared();
+        let h = r.direction.dot(oc);
+        let c = oc.length_squared() - self.radius * self.radius;
+        let discriminant = h * h - a * c;
+
+        if discriminant < 0.0 {
+            None
+        } else {
+            let sqrtd = discriminant.sqrt();
+
+            let valid_root = |t| t > t_min && t < t_max;
+
+            let root = (h - sqrtd) / a;
+            let t = if valid_root(root) {
+                root
+            } else {
+                let second_root = (h + sqrtd) / a;
+                if valid_root(second_root) {
+                    second_root
+                } else {
+                    return None;
+                }
+            };
+
+            let p = r.at(t);
+            let outward_normal = (p - self.center) / self.radius;
+            let front_face = r.direction.dot(outward_normal) < 0.0;
+            let normal = if front_face { outward_normal } else { -outward_normal };
+
+            Some(HitRecord { t, p, normal, front_face })
+        }
+    }
+}
 
 fn hit_sphere(center: Vec3, radius: f32, ray: &Ray) -> f32 {
     let oc = center - ray.origin;
@@ -21,20 +73,19 @@ fn hit_sphere(center: Vec3, radius: f32, ray: &Ray) -> f32 {
     let h = ray.direction.dot(oc);
     let c = oc.length_squared() - radius * radius;
     let discriminant = h * h - a * c;
-    
+
     if discriminant < 0.0 {
         -1.0
     } else {
-        (h - discriminant.sqrt()) /  a
+        (h - discriminant.sqrt()) / a
     }
-
 }
 
 fn ray_color(ray: Ray) -> Vec3 {
     let t = hit_sphere(Vec3::new(0.0, 0.0, -1.0), 0.5, &ray);
     if t > 0.0 {
         let n = (ray.at(t) - Vec3::new(0.0, 0.0, -1.0)).normalize();
-        0.5 * (n + 1.0)  
+        0.5 * (n + 1.0)
     } else {
         let unit_direction = ray.direction.normalize();
         let a = 0.5 * (unit_direction.y + 1.0);
