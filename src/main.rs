@@ -60,32 +60,45 @@ impl Hittable for Sphere {
             let p = r.at(t);
             let outward_normal = (p - self.center) / self.radius;
             let front_face = r.direction.dot(outward_normal) < 0.0;
-            let normal = if front_face { outward_normal } else { -outward_normal };
+            let normal = if front_face {
+                outward_normal
+            } else {
+                -outward_normal
+            };
 
-            Some(HitRecord { t, p, normal, front_face })
+            Some(HitRecord {
+                t,
+                p,
+                normal,
+                front_face,
+            })
         }
     }
 }
 
-fn hit_sphere(center: Vec3, radius: f32, ray: &Ray) -> f32 {
-    let oc = center - ray.origin;
-    let a = ray.direction.length_squared();
-    let h = ray.direction.dot(oc);
-    let c = oc.length_squared() - radius * radius;
-    let discriminant = h * h - a * c;
+pub struct HittableList {
+    pub objects: Vec<Box<dyn Hittable>>,
+}
 
-    if discriminant < 0.0 {
-        -1.0
-    } else {
-        (h - discriminant.sqrt()) / a
+impl Hittable for HittableList {
+    fn hit(&self, r: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+        let mut closest_hit = None;
+        let mut closest_so_far = t_max;
+
+        for object in &self.objects {
+            if let Some(hit) = object.hit(r, t_min, closest_so_far) {
+                closest_so_far = hit.t;
+                closest_hit = Some(hit);
+            }
+        }
+
+        closest_hit
     }
 }
 
-fn ray_color(ray: Ray) -> Vec3 {
-    let t = hit_sphere(Vec3::new(0.0, 0.0, -1.0), 0.5, &ray);
-    if t > 0.0 {
-        let n = (ray.at(t) - Vec3::new(0.0, 0.0, -1.0)).normalize();
-        0.5 * (n + 1.0)
+fn ray_color(ray: Ray, world: &HittableList) -> Vec3 {
+    if let Some(hit) = world.hit(&ray, 0.0, f32::INFINITY) {
+        0.5 * (hit.normal + 1.0)
     } else {
         let unit_direction = ray.direction.normalize();
         let a = 0.5 * (unit_direction.y + 1.0);
@@ -131,6 +144,19 @@ fn main() {
 
     let mut buffer = vec![0u32; image_width * image_height];
 
+    let mut world = HittableList {
+        objects: Vec::new(),
+    };
+
+    world.objects.push(Box::new(Sphere {
+        center: Vec3::new(0.0, 0.0, -1.0),
+        radius: 0.5,
+    }));
+    world.objects.push(Box::new(Sphere {
+        center: Vec3::new(0.0, -100.5, -1.0),
+        radius: 100.0,
+    }));
+
     let mut window = Window::new(
         "first program rtiow",
         image_width,
@@ -163,7 +189,7 @@ fn main() {
                         direction: ray_direction,
                     };
 
-                    let pixel_color = ray_color(r);
+                    let pixel_color = ray_color(r, &world);
                     buffer[i + j * width] = vec3_to_u32(pixel_color);
                 }
             }
