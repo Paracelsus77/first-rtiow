@@ -77,7 +77,7 @@ impl Hittable for Sphere {
 }
 
 pub struct HittableList {
-    pub objects: Vec<Box<dyn Hittable>>,
+    pub objects: Vec<Sphere>,
 }
 
 impl Hittable for HittableList {
@@ -148,14 +148,14 @@ fn main() {
         objects: Vec::new(),
     };
 
-    world.objects.push(Box::new(Sphere {
+    world.objects.push(Sphere {
         center: Vec3::new(0.0, 0.0, -1.0),
         radius: 0.5,
-    }));
-    world.objects.push(Box::new(Sphere {
+    });
+    world.objects.push(Sphere {
         center: Vec3::new(0.0, -100.5, -1.0),
         radius: 100.0,
-    }));
+    });
 
     let mut window = Window::new(
         "first program rtiow",
