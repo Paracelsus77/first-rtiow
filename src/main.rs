@@ -6,7 +6,7 @@ const WIDTH: usize = 1280;
 const _HEIGHT: usize = 720;
 
 fn ray_color(ray: Ray, world: &HittableList) -> Vec3 {
-    if let Some(hit) = world.hit(&ray, 0.0, f32::INFINITY) {
+    if let Some(hit) = world.hit(ray, 0.0, f32::INFINITY) {
         0.5 * (hit.normal + 1.0)
     } else {
         let unit_direction = ray.direction.normalize();
