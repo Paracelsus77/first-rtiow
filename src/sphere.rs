@@ -1,6 +1,6 @@
 use glam::Vec3;
 
-use crate::{HitRecord, Hittable, Ray};
+use crate::{HitRecord, Hittable, Interval, Ray};
 
 pub struct Sphere {
     pub center: Vec3,
@@ -8,7 +8,7 @@ pub struct Sphere {
 }
 
 impl Hittable for Sphere {
-    fn hit(&self, r: Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+    fn hit(&self, r: Ray, ray_t: Interval) -> Option<HitRecord> {
         let oc = self.center - r.origin;
         let a = r.direction.length_squared();
         let h = r.direction.dot(oc);
@@ -20,14 +20,14 @@ impl Hittable for Sphere {
         } else {
             let sqrtd = discriminant.sqrt();
 
-            let valid_root = |t| t > t_min && t < t_max;
+            
 
             let root = (h - sqrtd) / a;
-            let t = if valid_root(root) {
+            let t = if ray_t.surrounds(root) {
                 root
             } else {
                 let second_root = (h + sqrtd) / a;
-                if valid_root(second_root) {
+                if ray_t.surrounds(second_root) {
                     second_root
                 } else {
                     return None;
