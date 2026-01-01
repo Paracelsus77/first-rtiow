@@ -1,6 +1,6 @@
 use glam::Vec3;
 use minifb::{Key, ScaleMode, Window, WindowOptions};
-use first_rtiow::{Ray, Hittable, HittableList, Sphere};
+use rtiow::{Ray, Hittable, HittableList, Sphere};
 
 const WIDTH: usize = 1280;
 const _HEIGHT: usize = 720;
