@@ -1,6 +1,6 @@
 use glam::Vec3;
 use minifb::{Key, ScaleMode, Window, WindowOptions};
-use rtiow::{Hittable, HittableList, Interval, Ray, Sphere, Camera};
+use rtiow::{Camera, Hittable, HittableList, Interval, Ray, Sphere};
 
 const WIDTH: usize = 1280;
 const _HEIGHT: usize = 720;
@@ -23,7 +23,25 @@ fn vec3_to_u32(color: Vec3) -> u32 {
     (r << 16) | (g << 8) | b
 }
 
-fn main() {    
+fn render(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
+    for j in 0..camera.image_height {
+        for i in 0..camera.image_width {
+            let pixel_center = camera.pixel00_loc
+                + (i as f32 * camera.pixel_delta_u)
+                + (j as f32 * camera.pixel_delta_v);
+            let ray_direction = pixel_center - camera.center;
+            let r = Ray {
+                origin: camera.center,
+                direction: ray_direction,
+            };
+
+            let pixel_color = ray_color(r, &world);
+            buffer[i + j * camera.image_width] = vec3_to_u32(pixel_color);
+        }
+    }
+}
+
+fn main() {
     let camera = Camera::new(WIDTH);
 
     let mut buffer = vec![0u32; camera.image_width * camera.image_height];
@@ -59,24 +77,9 @@ fn main() {
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
         let new_size = window.get_size();
-
-        let (width, height) = new_size;
-
+      
         if redraw_needed {
-            for j in 0..height {
-                for i in 0..width {
-                    let pixel_center =
-                        camera.pixel00_loc + (i as f32 * camera.pixel_delta_u) + (j as f32 * camera.pixel_delta_v);
-                    let ray_direction = pixel_center - camera.center;
-                    let r = Ray {
-                        origin: camera.center,
-                        direction: ray_direction,
-                    };
-
-                    let pixel_color = ray_color(r, &world);
-                    buffer[i + j * width] = vec3_to_u32(pixel_color);
-                }
-            }
+            render(&mut buffer, &camera, &world);
             redraw_needed = false;
         }
 
