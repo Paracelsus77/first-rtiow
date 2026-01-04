@@ -4,7 +4,7 @@ use rtiow::{Camera, Hittable, HittableList, Interval, Ray, Sphere};
 
 const WIDTH: usize = 1280;
 const _HEIGHT: usize = 720;
-const MAX_DEPTH: u32 = 10;
+const MAX_DEPTH: u32 = 50;
 
 fn ray_color(ray: Ray, world: &HittableList, depth: u32) -> Vec3 {
     if depth <= 0 {
@@ -12,7 +12,7 @@ fn ray_color(ray: Ray, world: &HittableList, depth: u32) -> Vec3 {
     } else if let Some(hit) = world.hit(ray, Interval::new(0.001, f32::INFINITY)) {
         // let direction = random_on_hemisphere(hit.normal);
         let direction = hit.normal + random_in_unit_sphere();
-        0.5 * ray_color(
+        0.1 * ray_color(
             Ray {
                 origin: hit.p,
                 direction,
@@ -20,7 +20,6 @@ fn ray_color(ray: Ray, world: &HittableList, depth: u32) -> Vec3 {
             &world,
             depth - 1,
         )
-        // 0.5 * (hit.normal + 1.0)
     } else {
         let unit_direction = ray.direction.normalize();
         let a = 0.5 * (unit_direction.y + 1.0);
@@ -28,12 +27,24 @@ fn ray_color(ray: Ray, world: &HittableList, depth: u32) -> Vec3 {
     }
 }
 
+fn linear_to_gamma(linear_component: f32) -> f32 {
+    if linear_component > 0.0 {
+        linear_component.sqrt()
+    } else {
+        0.0
+    }
+}
+
 fn vec3_to_u32(color: Vec3) -> u32 {
     let intensity = Interval::new(0.0, 0.999);
 
-    let r = (intensity.clamp(color.x) * 256.0) as u32;
-    let g = (intensity.clamp(color.y) * 256.0) as u32;
-    let b = (intensity.clamp(color.z) * 256.0) as u32;
+    let colorx = linear_to_gamma(color.x);
+    let colory = linear_to_gamma(color.y);
+    let colorz = linear_to_gamma(color.z);
+
+    let r = (intensity.clamp(colorx) * 256.0) as u32;
+    let g = (intensity.clamp(colory) * 256.0) as u32;
+    let b = (intensity.clamp(colorz) * 256.0) as u32;
 
     (r << 16) | (g << 8) | b
 }
