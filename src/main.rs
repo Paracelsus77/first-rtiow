@@ -1,14 +1,26 @@
 use glam::Vec3;
 use minifb::{Key, ScaleMode, Window, WindowOptions};
 use rtiow::{Camera, Hittable, HittableList, Interval, Ray, Sphere};
-// use rand::Rng;
 
 const WIDTH: usize = 1280;
 const _HEIGHT: usize = 720;
+const MAX_DEPTH: u32 = 10;
 
-fn ray_color(ray: Ray, world: &HittableList) -> Vec3 {
-    if let Some(hit) = world.hit(ray, Interval::new(0.0, f32::INFINITY)) {
-        0.5 * (hit.normal + 1.0)
+fn ray_color(ray: Ray, world: &HittableList, depth: u32) -> Vec3 {
+    if depth <= 0 {
+        Vec3::ZERO
+    } else if let Some(hit) = world.hit(ray, Interval::new(0.001, f32::INFINITY)) {
+        // let direction = random_on_hemisphere(hit.normal);
+        let direction = hit.normal + random_in_unit_sphere();
+        0.5 * ray_color(
+            Ray {
+                origin: hit.p,
+                direction,
+            },
+            &world,
+            depth - 1,
+        )
+        // 0.5 * (hit.normal + 1.0)
     } else {
         let unit_direction = ray.direction.normalize();
         let a = 0.5 * (unit_direction.y + 1.0);
@@ -31,7 +43,7 @@ fn rand_float() -> f32 {
 }
 
 fn random_range(min: f32, max: f32) -> f32 {
-    rand::random_range(min..max) 
+    rand::random_range(min..max)
 }
 
 #[expect(unused)]
@@ -39,19 +51,29 @@ fn random_vec3() -> Vec3 {
     Vec3::from_array(rand::random())
 }
 
-#[expect(unused)]
 fn random_in_unit_sphere() -> Vec3 {
     loop {
         // Generate a random vector between -1.0 and 1.0
         let p = Vec3::new(
             random_range(-1.0, 1.0),
             random_range(-1.0, 1.0),
-            random_range(-1.0, 1.0)
+            random_range(-1.0, 1.0),
         );
         let lensq = p.length_squared();
         if lensq < 1.0 && lensq > f32::EPSILON {
             return p;
         }
+    }
+}
+
+#[expect(unused)]
+fn random_on_hemisphere(normal: Vec3) -> Vec3 {
+    let on_unit_sphere = random_in_unit_sphere();
+    let orientation = on_unit_sphere.dot(normal);
+    if orientation > 0.0 {
+        on_unit_sphere
+    } else {
+        -on_unit_sphere
     }
 }
 
@@ -78,7 +100,7 @@ fn render(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
                     direction: ray_direction,
                 };
 
-                pixel_color += ray_color(r, &world);
+                pixel_color += ray_color(r, &world, MAX_DEPTH);
             }
             buffer[i + j * camera.image_width] = vec3_to_u32(pixel_color * pixel_sample_scale);
         }
