@@ -30,6 +30,31 @@ fn rand_float() -> f32 {
     rand::random::<f32>()
 }
 
+fn random_range(min: f32, max: f32) -> f32 {
+    rand::random_range(min..max) 
+}
+
+#[expect(unused)]
+fn random_vec3() -> Vec3 {
+    Vec3::from_array(rand::random())
+}
+
+#[expect(unused)]
+fn random_in_unit_sphere() -> Vec3 {
+    loop {
+        // Generate a random vector between -1.0 and 1.0
+        let p = Vec3::new(
+            random_range(-1.0, 1.0),
+            random_range(-1.0, 1.0),
+            random_range(-1.0, 1.0)
+        );
+        let lensq = p.length_squared();
+        if lensq < 1.0 && lensq > f32::EPSILON {
+            return p;
+        }
+    }
+}
+
 fn sample_square() -> Vec3 {
     Vec3::new(rand_float() - 0.5, rand_float() - 0.5, 0.0)
 }
