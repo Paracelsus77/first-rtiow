@@ -1,4 +1,4 @@
-use crate::{HitRecord, NearZero, Ray, random_unit_vector};
+use crate::{HitRecord, NearZero, Ray, rand_float, random_unit_vector};
 use glam::Vec3;
 
 #[derive(Clone, Copy)]
@@ -37,8 +37,8 @@ impl Metal {
             origin: rec.p,
             direction: reflected.normalize() + (self.fuzz * random_unit_vector()),
         };
-        if scattered.direction.dot(rec.normal) > 0.0  {
-            Some((self.albedo, scattered))  
+        if scattered.direction.dot(rec.normal) > 0.0 {
+            Some((self.albedo, scattered))
         } else {
             None
         }
@@ -50,12 +50,41 @@ pub struct Dielectric {
     pub refraction_index: f32,
 }
 
+fn reflectance(cosine: f32, refraction_index: f32) -> f32 {
+    let mut r0 = (1.0-refraction_index) / (1.0 + refraction_index);
+    r0 *= r0;
+    r0 + (1.0-r0)*(1.0-cosine).powi(5)
+}
+
 impl Dielectric {
     fn scatter(&self, r_in: Ray, rec: &HitRecord) -> Option<(Vec3, Ray)> {
-        let ri = if rec.front_face { 1.0/self.refraction_index} else {self.refraction_index};
-        let refracted = r_in.direction.normalize().refract(rec.normal, ri);
-        Some((Vec3::ONE, Ray {origin: rec.p, direction: refracted}))
+        let ri = if rec.front_face {
+            1.0 / self.refraction_index
+        } else {
+            self.refraction_index
+        };
+
+        let unit_direction = r_in.direction.normalize();
+
+        let cos_theta = (-r_in.direction.normalize().dot(rec.normal)).min(1.0);
+        let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
+
+        let direction = if ri * sin_theta > 1.0 || reflectance(cos_theta, ri) > rand_float() {
+            unit_direction.reflect(rec.normal)
+        } else {
+            unit_direction.refract(rec.normal, ri)
+        };
+
+        // let refracted = r_in.direction.normalize().refract(rec.normal, ri);
+        Some((
+            Vec3::ONE,
+            Ray {
+                origin: rec.p,
+                direction: direction,
+            },
+        ))
     }
+    
 }
 
 #[derive(Clone, Copy)]
