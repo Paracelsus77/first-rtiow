@@ -1,5 +1,6 @@
 use glam::Vec3;
 use minifb::{Key, ScaleMode, Window, WindowOptions};
+use rayon::{iter::{IndexedParallelIterator, ParallelIterator}, slice::ParallelSliceMut};
 use rtiow::{Camera, Hittable, HittableList, Interval, Ray, Sphere};
 
 const WIDTH: usize = 1280;
@@ -92,6 +93,7 @@ fn sample_square() -> Vec3 {
     Vec3::new(rand_float() - 0.5, rand_float() - 0.5, 0.0)
 }
 
+#[expect(unused)]
 fn render(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
     let samples_per_pixel = 100;
     let pixel_sample_scale = 1.0 / samples_per_pixel as f32;
@@ -116,6 +118,33 @@ fn render(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
             buffer[i + j * camera.image_width] = vec3_to_u32(pixel_color * pixel_sample_scale);
         }
     }
+}
+
+fn render_parallel(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
+    let samples_per_pixel = 100;
+    let pixel_sample_scale = 1.0 / samples_per_pixel as f32;
+
+    buffer
+        .par_chunks_mut(camera.image_width)
+        .enumerate()
+        .for_each(|(y, row)| {
+            for (x, pixel) in row.iter_mut().enumerate() {
+                let mut pixel_color = Vec3::ZERO;
+                for _ in 0..samples_per_pixel {
+                    let offset = sample_square();
+                    let pixel_center = camera.pixel00_loc
+                        + ((x as f32 + offset.x) * camera.pixel_delta_u)
+                        + ((y as f32 + offset.y) * camera.pixel_delta_v);
+                    let ray_direction = pixel_center - camera.center;
+                    let r = Ray {
+                        origin: camera.center,
+                        direction: ray_direction,
+                    };
+                    pixel_color += ray_color(r, &world, MAX_DEPTH);
+                    *pixel = vec3_to_u32(pixel_color * pixel_sample_scale);
+                }
+            }
+        });
 }
 
 fn main() {
@@ -156,7 +185,7 @@ fn main() {
         let new_size = window.get_size();
 
         if redraw_needed {
-            render(&mut buffer, &camera, &world);
+            render_parallel(&mut buffer, &camera, &world);
             redraw_needed = false;
         }
 
