@@ -35,9 +35,13 @@ impl Metal {
         let reflected = r_in.direction.reflect(rec.normal);
         let scattered = Ray {
             origin: rec.p,
-            direction: reflected,
+            direction: reflected.normalize() + (self.fuzz * random_unit_vector()),
         };
-        Some((self.albedo, scattered))
+        if scattered.direction.dot(rec.normal) > 0.0  {
+            Some((self.albedo, scattered))  
+        } else {
+            None
+        }
     }
 }
 

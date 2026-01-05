@@ -135,7 +135,7 @@ fn main() {
         radius: 0.5,
         material: Material::Metal(Metal {
             albedo: Vec3::new(0.8, 0.8, 0.8),
-            fuzz: 0.0,
+            fuzz: 0.3,
         }),
     });
 
@@ -143,8 +143,8 @@ fn main() {
         center: Vec3::new(1.0, 0.0, -1.0),
         radius: 0.5,
         material: Material::Metal(Metal {
-            albedo: Vec3::new(0.8, 0.8, 0.2),
-            fuzz: 0.0,
+            albedo: Vec3::new(0.8, 0.6, 0.2),
+            fuzz: 1.0,
         }),
     });
 
