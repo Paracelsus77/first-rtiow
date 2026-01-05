@@ -1,7 +1,12 @@
 use glam::Vec3;
 use minifb::{Key, ScaleMode, Window, WindowOptions};
-use rayon::{iter::{IndexedParallelIterator, ParallelIterator}, slice::ParallelSliceMut};
-use rtiow::{Camera, Hittable, HittableList, Interval, Ray, Sphere, random_in_unit_sphere, sample_square};
+use rayon::{
+    iter::{IndexedParallelIterator, ParallelIterator},
+    slice::ParallelSliceMut,
+};
+use rtiow::{
+    Camera, Hittable, HittableList, Interval, Ray, Sphere, random_in_unit_sphere, sample_square,
+};
 
 const WIDTH: usize = 1280;
 const _HEIGHT: usize = 720;
@@ -49,8 +54,6 @@ fn vec3_to_u32(color: Vec3) -> u32 {
 
     (r << 16) | (g << 8) | b
 }
-
-
 
 #[expect(unused)]
 fn render(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
