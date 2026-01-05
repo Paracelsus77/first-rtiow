@@ -47,7 +47,15 @@ impl Metal {
 
 #[derive(Clone, Copy)]
 pub struct Dielectric {
-    pub ir: f32,
+    pub refraction_index: f32,
+}
+
+impl Dielectric {
+    fn scatter(&self, r_in: Ray, rec: &HitRecord) -> Option<(Vec3, Ray)> {
+        let ri = if rec.front_face { 1.0/self.refraction_index} else {self.refraction_index};
+        let refracted = r_in.direction.normalize().refract(rec.normal, ri);
+        Some((Vec3::ONE, Ray {origin: rec.p, direction: refracted}))
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -62,7 +70,7 @@ impl Material {
         match self {
             Material::Lambertian(m) => m.scatter(r_in, rec),
             Material::Metal(m) => m.scatter(r_in, rec),
-            _ => None,
+            Material::Dielectric(m) => m.scatter(r_in, rec),
         }
     }
 }

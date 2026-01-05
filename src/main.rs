@@ -5,7 +5,7 @@ use rayon::{
     slice::ParallelSliceMut,
 };
 use rtiow::{
-    Camera, Hittable, HittableList, Interval, Lambertian, Material, Metal, Ray, Sphere,
+    Camera, Dielectric, Hittable, HittableList, Interval, Lambertian, Material, Metal, Ray, Sphere,
     sample_square,
 };
 
@@ -133,9 +133,8 @@ fn main() {
     world.objects.push(Sphere {
         center: Vec3::new(-1.0, 0.0, -1.0),
         radius: 0.5,
-        material: Material::Metal(Metal {
-            albedo: Vec3::new(0.8, 0.8, 0.8),
-            fuzz: 0.3,
+        material: Material::Dielectric(Dielectric {
+            refraction_index: 1.5,
         }),
     });
 
