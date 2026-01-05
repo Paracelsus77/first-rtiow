@@ -10,7 +10,13 @@ impl Hittable for HittableList {
         let mut closest_so_far = ray_t.max;
 
         for object in &self.objects {
-            if let Some(hit) = object.hit(r, Interval { min: ray_t.min, max: closest_so_far }) {
+            if let Some(hit) = object.hit(
+                r,
+                Interval {
+                    min: ray_t.min,
+                    max: closest_so_far,
+                },
+            ) {
                 closest_so_far = hit.t;
                 closest_hit = Some(hit);
             }

@@ -1,6 +1,5 @@
 use glam::Vec3;
 
-
 pub fn rand_float() -> f32 {
     rand::random::<f32>()
 }
@@ -41,7 +40,6 @@ pub fn random_on_hemisphere(normal: Vec3) -> Vec3 {
 pub fn sample_square() -> Vec3 {
     Vec3::new(rand_float() - 0.5, rand_float() - 0.5, 0.0)
 }
-
 
 pub trait NearZero {
     fn near_zero(&self) -> bool;

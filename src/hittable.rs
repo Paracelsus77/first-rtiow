@@ -1,13 +1,13 @@
 use glam::Vec3;
 
-use crate::{Interval, Ray, Material};
+use crate::{Interval, Material, Ray};
 
 pub struct HitRecord {
     pub p: Vec3,
     pub normal: Vec3,
     pub t: f32,
     pub front_face: bool,
-    pub mat: Material
+    pub mat: Material,
 }
 
 pub trait Hittable {

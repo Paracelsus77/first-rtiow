@@ -51,9 +51,9 @@ pub struct Dielectric {
 }
 
 fn reflectance(cosine: f32, refraction_index: f32) -> f32 {
-    let mut r0 = (1.0-refraction_index) / (1.0 + refraction_index);
+    let mut r0 = (1.0 - refraction_index) / (1.0 + refraction_index);
     r0 *= r0;
-    r0 + (1.0-r0)*(1.0-cosine).powi(5)
+    r0 + (1.0 - r0) * (1.0 - cosine).powi(5)
 }
 
 impl Dielectric {
@@ -84,7 +84,6 @@ impl Dielectric {
             },
         ))
     }
-    
 }
 
 #[derive(Clone, Copy)]

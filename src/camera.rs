@@ -5,20 +5,20 @@ pub struct Camera {
     pub pixel00_loc: Vec3,
     pub pixel_delta_u: Vec3,
     pub pixel_delta_v: Vec3,
-    pub image_width: usize, 
-    pub image_height: usize, 
+    pub image_width: usize,
+    pub image_height: usize,
 }
 
 impl Camera {
     pub fn new(image_width: usize) -> Self {
         let aspect_ratio = 16.0 / 9.0f32;
-        
+
         let image_height = ((image_width as f32 / aspect_ratio) as usize).max(1);
 
         let focal_length = 1f32;
         let viewport_height = 2f32;
         let viewport_width = viewport_height * (image_width as f32 / image_height as f32);
-    
+
         let camera_center = Vec3::ZERO;
 
         let viewport_u = Vec3::new(viewport_width, 0.0, 0.0);

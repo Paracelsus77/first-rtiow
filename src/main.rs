@@ -142,7 +142,7 @@ fn main() {
         center: Vec3::new(-1.0, 0.0, -1.0),
         radius: 0.4,
         material: Material::Dielectric(Dielectric {
-            refraction_index: 1.0/1.5,
+            refraction_index: 1.0 / 1.5,
         }),
     });
 
