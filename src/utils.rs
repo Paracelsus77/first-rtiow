@@ -13,7 +13,7 @@ pub fn random_vec3() -> Vec3 {
     Vec3::from_array(rand::random())
 }
 
-pub fn random_in_unit_sphere() -> Vec3 {
+pub fn random_unit_vector() -> Vec3 {
     loop {
         // Generate a random vector between -1.0 and 1.0
         let p = Vec3::new(
@@ -29,7 +29,7 @@ pub fn random_in_unit_sphere() -> Vec3 {
 }
 
 pub fn random_on_hemisphere(normal: Vec3) -> Vec3 {
-    let on_unit_sphere = random_in_unit_sphere();
+    let on_unit_sphere = random_unit_vector();
     let orientation = on_unit_sphere.dot(normal);
     if orientation > 0.0 {
         on_unit_sphere
@@ -40,4 +40,16 @@ pub fn random_on_hemisphere(normal: Vec3) -> Vec3 {
 
 pub fn sample_square() -> Vec3 {
     Vec3::new(rand_float() - 0.5, rand_float() - 0.5, 0.0)
+}
+
+
+pub trait NearZero {
+    fn near_zero(&self) -> bool;
+}
+
+impl NearZero for Vec3 {
+    fn near_zero(&self) -> bool {
+        let s = 1e-8;
+        self.x.abs() < s && self.y.abs() < s && self.z.abs() < s
+    }
 }

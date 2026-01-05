@@ -1,10 +1,11 @@
 use glam::Vec3;
 
-use crate::{HitRecord, Hittable, Interval, Ray};
+use crate::{HitRecord, Hittable, Interval, Material, Ray};
 
 pub struct Sphere {
     pub center: Vec3,
     pub radius: f32,
+    pub material: Material,
 }
 
 impl Hittable for Sphere {
@@ -19,8 +20,6 @@ impl Hittable for Sphere {
             None
         } else {
             let sqrtd = discriminant.sqrt();
-
-            
 
             let root = (h - sqrtd) / a;
             let t = if ray_t.surrounds(root) {
@@ -48,6 +47,7 @@ impl Hittable for Sphere {
                 p,
                 normal,
                 front_face,
+                mat: self.material,
             })
         }
     }
