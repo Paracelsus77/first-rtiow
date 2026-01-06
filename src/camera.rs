@@ -10,13 +10,16 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new(image_width: usize) -> Self {
+    pub fn new(image_width: usize, vfov: f32) -> Self {
         let aspect_ratio = 16.0 / 9.0f32;
 
         let image_height = ((image_width as f32 / aspect_ratio) as usize).max(1);
 
         let focal_length = 1f32;
-        let viewport_height = 2f32;
+
+        let theta = vfov.to_radians();
+        let h = (theta/2.0).tan();
+        let viewport_height =  2.0 * h * focal_length;
         let viewport_width = viewport_height * (image_width as f32 / image_height as f32);
 
         let camera_center = Vec3::ZERO;
