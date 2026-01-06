@@ -108,7 +108,13 @@ fn render_parallel(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
 }
 
 fn main() {
-    let camera = Camera::new(WIDTH, 90.0);
+    let camera = Camera::new(
+        WIDTH,
+        90.0,
+        Vec3::new(0.0, 0.0, 0.0),
+        Vec3::new(0.0, 0.0, -1.0),
+        Vec3::new(0.0, 1.0, 0.0),
+    );
 
     let mut buffer = vec![0u32; camera.image_width * camera.image_height];
 
@@ -116,7 +122,7 @@ fn main() {
         objects: Vec::new(),
     };
 
-    let r = (PI/4.0).sin();
+    let r = (PI / 4.0).sin();
 
     world.objects.push(Sphere {
         center: Vec3::new(-r, 0.0, -1.0),
