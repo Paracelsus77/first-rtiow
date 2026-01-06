@@ -111,7 +111,7 @@ fn main() {
     let camera = Camera::new(
         WIDTH,
         90.0,
-        Vec3::new(0.0, 0.0, 0.0),
+        Vec3::new(-2.0, 2.0, 1.0),
         Vec3::new(0.0, 0.0, -1.0),
         Vec3::new(0.0, 1.0, 0.0),
     );
@@ -122,64 +122,64 @@ fn main() {
         objects: Vec::new(),
     };
 
-    let r = (PI / 4.0).sin();
+    // let r = (PI / 4.0).sin();
+
+    // world.objects.push(Sphere {
+    //     center: Vec3::new(-r, 0.0, -1.0),
+    //     radius: r,
+    //     material: Material::Lambertian(Lambertian {
+    //         albedo: Vec3::new(0.0, 0.0, 1.0),
+    //     }),
+    // });
+
+    // world.objects.push(Sphere {
+    //     center: Vec3::new(r, 0.0, -1.0),
+    //     radius: r,
+    //     material: Material::Lambertian(Lambertian {
+    //         albedo: Vec3::new(1.0, 0.0, 0.0),
+    //     }),
+    // });
 
     world.objects.push(Sphere {
-        center: Vec3::new(-r, 0.0, -1.0),
-        radius: r,
+        center: Vec3::new(0.0, -100.5, -1.0),
+        radius: 100.0,
         material: Material::Lambertian(Lambertian {
-            albedo: Vec3::new(0.0, 0.0, 1.0),
+            albedo: Vec3::new(0.8, 0.8, 0.0),
         }),
     });
 
     world.objects.push(Sphere {
-        center: Vec3::new(r, 0.0, -1.0),
-        radius: r,
+        center: Vec3::new(0.0, 0.0, -1.2),
+        radius: 0.5,
         material: Material::Lambertian(Lambertian {
-            albedo: Vec3::new(1.0, 0.0, 0.0),
+            albedo: Vec3::new(0.1, 0.2, 0.5),
         }),
     });
 
-    // world.objects.push(Sphere {
-    //     center: Vec3::new(0.0, -100.5, -1.0),
-    //     radius: 100.0,
-    //     material: Material::Lambertian(Lambertian {
-    //         albedo: Vec3::new(0.8, 0.8, 0.0),
-    //     }),
-    // });
+    world.objects.push(Sphere {
+        center: Vec3::new(-1.0, 0.0, -1.0),
+        radius: 0.5,
+        material: Material::Dielectric(Dielectric {
+            refraction_index: 1.5,
+        }),
+    });
 
-    // world.objects.push(Sphere {
-    //     center: Vec3::new(0.0, 0.0, -1.2),
-    //     radius: 0.5,
-    //     material: Material::Lambertian(Lambertian {
-    //         albedo: Vec3::new(0.1, 0.2, 0.5),
-    //     }),
-    // });
+    world.objects.push(Sphere {
+        center: Vec3::new(-1.0, 0.0, -1.0),
+        radius: 0.4,
+        material: Material::Dielectric(Dielectric {
+            refraction_index: 1.0 / 1.5,
+        }),
+    });
 
-    // world.objects.push(Sphere {
-    //     center: Vec3::new(-1.0, 0.0, -1.0),
-    //     radius: 0.5,
-    //     material: Material::Dielectric(Dielectric {
-    //         refraction_index: 1.5,
-    //     }),
-    // });
-
-    // world.objects.push(Sphere {
-    //     center: Vec3::new(-1.0, 0.0, -1.0),
-    //     radius: 0.4,
-    //     material: Material::Dielectric(Dielectric {
-    //         refraction_index: 1.0 / 1.5,
-    //     }),
-    // });
-
-    // world.objects.push(Sphere {
-    //     center: Vec3::new(1.0, 0.0, -1.0),
-    //     radius: 0.5,
-    //     material: Material::Metal(Metal {
-    //         albedo: Vec3::new(0.8, 0.6, 0.2),
-    //         fuzz: 1.0,
-    //     }),
-    // });
+    world.objects.push(Sphere {
+        center: Vec3::new(1.0, 0.0, -1.0),
+        radius: 0.5,
+        material: Material::Metal(Metal {
+            albedo: Vec3::new(0.8, 0.6, 0.2),
+            fuzz: 1.0,
+        }),
+    });
 
     let mut window = Window::new(
         "first program rtiow",
