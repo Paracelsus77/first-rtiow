@@ -12,3 +12,6 @@ If you are on a debian based distribution like Ubuntu you might need to install 
 ```bash
 sudo apt install libxkbcommon-dev libwayland-cursor0 libwayland-dev
 ```
+
+Final image from the first book:
+![Final Render](images/final_render.png)
