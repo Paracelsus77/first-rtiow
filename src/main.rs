@@ -8,7 +8,7 @@ use rayon::{
 };
 use rtiow::{
     Camera, Dielectric, Hittable, HittableList, Interval, Lambertian, Material, Metal, Ray, Sphere,
-    random_in_unit_disk, sample_square,
+    rand_float, random_in_unit_disk, random_range, random_vec3, random_vec3_range, sample_square,
 };
 
 const WIDTH: usize = 1280;
@@ -86,7 +86,7 @@ fn defocus_disk_sample(center: Vec3, defocus_disk_u: Vec3, defocus_disk_v: Vec3)
 }
 
 fn render_parallel(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
-    let samples_per_pixel = 100;
+    let samples_per_pixel = 500;
     let pixel_sample_scale = 1.0 / samples_per_pixel as f32;
 
     buffer
@@ -125,11 +125,11 @@ fn main() {
     let camera = Camera::new(
         WIDTH,
         20.0,
-        Vec3::new(-2.0, 2.0, 1.0),
-        Vec3::new(0.0, 0.0, -1.0),
+        Vec3::new(13.0, 2.0, 3.0),
+        Vec3::new(0.0, 0.0, 0.0),
         Vec3::new(0.0, 1.0, 0.0),
+        0.6,
         10.0,
-        3.4,
     );
 
     let mut buffer = vec![0u32; camera.image_width * camera.image_height];
@@ -138,62 +138,64 @@ fn main() {
         objects: Vec::new(),
     };
 
-    // let r = (PI / 4.0).sin();
-
-    // world.objects.push(Sphere {
-    //     center: Vec3::new(-r, 0.0, -1.0),
-    //     radius: r,
-    //     material: Material::Lambertian(Lambertian {
-    //         albedo: Vec3::new(0.0, 0.0, 1.0),
-    //     }),
-    // });
-
-    // world.objects.push(Sphere {
-    //     center: Vec3::new(r, 0.0, -1.0),
-    //     radius: r,
-    //     material: Material::Lambertian(Lambertian {
-    //         albedo: Vec3::new(1.0, 0.0, 0.0),
-    //     }),
-    // });
-
+    // Ground
     world.objects.push(Sphere {
-        center: Vec3::new(0.0, -100.5, -1.0),
-        radius: 100.0,
+        center: Vec3::new(0.0, -1000.0, 0.0),
+        radius: 1000.0,
         material: Material::Lambertian(Lambertian {
-            albedo: Vec3::new(0.8, 0.8, 0.0),
+            albedo: Vec3::new(0.5, 0.5, 0.5),
         }),
     });
 
-    world.objects.push(Sphere {
-        center: Vec3::new(0.0, 0.0, -1.2),
-        radius: 0.5,
-        material: Material::Lambertian(Lambertian {
-            albedo: Vec3::new(0.1, 0.2, 0.5),
-        }),
-    });
+    for a in -11..11 {
+        for b in -11..11 {
+            let choose_material = rand_float();
+            let sphere_center =
+                Vec3::new(a as f32 + 0.9 * rand_float(), 0.2, b as f32 + rand_float());
+
+            if (sphere_center - Vec3::new(4.0, 0.2, 0.0)).length() > 0.9 {
+                world.objects.push(Sphere {
+                    center: sphere_center,
+                    radius: 0.2,
+                    material: match choose_material {
+                        0.0..0.8 => Material::Lambertian(Lambertian {
+                            albedo: random_vec3() * random_vec3(),
+                        }),
+                        0.8..0.95 => Material::Metal(Metal {
+                            albedo: random_vec3_range(0.5, 1.0),
+                            fuzz: random_range(0.0, 0.5),
+                        }),
+                        _ => Material::Dielectric(Dielectric {
+                            refraction_index: 1.5,
+                        }),
+                    },
+                })
+            }
+        }
+    }
 
     world.objects.push(Sphere {
-        center: Vec3::new(-1.0, 0.0, -1.0),
-        radius: 0.5,
+        center: Vec3::new(0.0, 1.0, 0.0),
+        radius: 1.0,
         material: Material::Dielectric(Dielectric {
             refraction_index: 1.5,
         }),
     });
 
     world.objects.push(Sphere {
-        center: Vec3::new(-1.0, 0.0, -1.0),
-        radius: 0.4,
-        material: Material::Dielectric(Dielectric {
-            refraction_index: 1.0 / 1.5,
+        center: Vec3::new(-4.0, 1.0, 0.0),
+        radius: 1.0,
+        material: Material::Lambertian(Lambertian {
+            albedo: Vec3::new(0.4, 0.2, 0.1),
         }),
     });
 
     world.objects.push(Sphere {
-        center: Vec3::new(1.0, 0.0, -1.0),
-        radius: 0.5,
+        center: Vec3::new(4.0, 1.0, 0.0),
+        radius: 1.0,
         material: Material::Metal(Metal {
-            albedo: Vec3::new(0.8, 0.6, 0.2),
-            fuzz: 1.0,
+            albedo: Vec3::new(0.7, 0.6, 0.5),
+            fuzz: 0.0,
         }),
     });
 

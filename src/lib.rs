@@ -15,6 +15,6 @@ pub use ray::Ray;
 pub use sphere::Sphere;
 pub use utils::{
     NearZero, rand_float, random_on_hemisphere, random_range, random_unit_vector, random_in_unit_disk, random_vec3,
-    sample_square,
+    sample_square,random_vec3_range
 };
 pub use world::HittableList;
