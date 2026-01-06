@@ -1,4 +1,4 @@
-use std::f32::consts::PI;
+// use std::f32::consts::PI;
 
 use glam::Vec3;
 use minifb::{Key, ScaleMode, Window, WindowOptions};
@@ -8,7 +8,7 @@ use rayon::{
 };
 use rtiow::{
     Camera, Dielectric, Hittable, HittableList, Interval, Lambertian, Material, Metal, Ray, Sphere,
-    sample_square,
+    random_in_unit_disk, sample_square,
 };
 
 const WIDTH: usize = 1280;
@@ -80,6 +80,11 @@ fn render(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
     }
 }
 
+fn defocus_disk_sample(center: Vec3, defocus_disk_u: Vec3, defocus_disk_v: Vec3) -> Vec3 {
+    let p = random_in_unit_disk();
+    center + (p.x * defocus_disk_u) + (p.y * defocus_disk_v)
+}
+
 fn render_parallel(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
     let samples_per_pixel = 100;
     let pixel_sample_scale = 1.0 / samples_per_pixel as f32;
@@ -95,9 +100,18 @@ fn render_parallel(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
                     let pixel_center = camera.pixel00_loc
                         + ((x as f32 + offset.x) * camera.pixel_delta_u)
                         + ((y as f32 + offset.y) * camera.pixel_delta_v);
-                    let ray_direction = pixel_center - camera.center;
+                    let ray_origin = if camera.defocus_angle <= 0.0 {
+                        camera.center
+                    } else {
+                        defocus_disk_sample(
+                            camera.center,
+                            camera.defocus_disk_u,
+                            camera.defocus_disk_v,
+                        )
+                    };
+                    let ray_direction = pixel_center - ray_origin;
                     let r = Ray {
-                        origin: camera.center,
+                        origin: ray_origin,
                         direction: ray_direction,
                     };
                     pixel_color += ray_color(r, &world, MAX_DEPTH);
@@ -114,6 +128,8 @@ fn main() {
         Vec3::new(-2.0, 2.0, 1.0),
         Vec3::new(0.0, 0.0, -1.0),
         Vec3::new(0.0, 1.0, 0.0),
+        10.0,
+        3.4,
     );
 
     let mut buffer = vec![0u32; camera.image_width * camera.image_height];

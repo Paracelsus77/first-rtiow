@@ -14,7 +14,7 @@ pub use material::{Dielectric, Lambertian, Material, Metal};
 pub use ray::Ray;
 pub use sphere::Sphere;
 pub use utils::{
-    NearZero, rand_float, random_on_hemisphere, random_range, random_unit_vector, random_vec3,
+    NearZero, rand_float, random_on_hemisphere, random_range, random_unit_vector, random_in_unit_disk, random_vec3,
     sample_square,
 };
 pub use world::HittableList;

@@ -37,6 +37,15 @@ pub fn random_on_hemisphere(normal: Vec3) -> Vec3 {
     }
 }
 
+pub fn random_in_unit_disk() -> Vec3 {
+    loop {
+        let p = Vec3::new(random_range(-1.0, 1.0), random_range(-1.0, 1.0), 0.0);
+        if p.length_squared() < 1.0 {
+            return p;
+        }
+    }
+}
+
 pub fn sample_square() -> Vec3 {
     Vec3::new(rand_float() - 0.5, rand_float() - 0.5, 0.0)
 }
