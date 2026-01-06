@@ -110,7 +110,7 @@ fn render_parallel(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
 fn main() {
     let camera = Camera::new(
         WIDTH,
-        90.0,
+        20.0,
         Vec3::new(-2.0, 2.0, 1.0),
         Vec3::new(0.0, 0.0, -1.0),
         Vec3::new(0.0, 1.0, 0.0),
