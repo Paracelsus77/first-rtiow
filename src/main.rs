@@ -40,45 +40,17 @@ fn linear_to_gamma(linear_component: f32) -> f32 {
 }
 
 fn vec3_to_u32(color: Vec3) -> u32 {
-    let intensity = Interval::new(0.0, 0.999);
-
     let colorx = linear_to_gamma(color.x);
     let colory = linear_to_gamma(color.y);
     let colorz = linear_to_gamma(color.z);
 
-    let r = (intensity.clamp(colorx) * 256.0) as u32;
-    let g = (intensity.clamp(colory) * 256.0) as u32;
-    let b = (intensity.clamp(colorz) * 256.0) as u32;
+    let r = (colorx.clamp(0.0, 0.999) * 256.0) as u32;
+    let g = (colory.clamp(0.0, 0.999) * 256.0) as u32;
+    let b = (colorz.clamp(0.0, 0.999) * 256.0) as u32;
 
     (r << 16) | (g << 8) | b
 }
 
-#[expect(unused)]
-fn render(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
-    let samples_per_pixel = 100;
-    let pixel_sample_scale = 1.0 / samples_per_pixel as f32;
-
-    for j in 0..camera.image_height {
-        for i in 0..camera.image_width {
-            let mut pixel_color = Vec3::ZERO;
-
-            for _ in 0..samples_per_pixel {
-                let offset = sample_square();
-                let pixel_center = camera.pixel00_loc
-                    + ((i as f32 + offset.x) * camera.pixel_delta_u)
-                    + ((j as f32 + offset.y) * camera.pixel_delta_v);
-                let ray_direction = pixel_center - camera.center;
-                let r = Ray {
-                    origin: camera.center,
-                    direction: ray_direction,
-                };
-
-                pixel_color += ray_color(r, &world, MAX_DEPTH);
-            }
-            buffer[i + j * camera.image_width] = vec3_to_u32(pixel_color * pixel_sample_scale);
-        }
-    }
-}
 
 fn defocus_disk_sample(center: Vec3, defocus_disk_u: Vec3, defocus_disk_v: Vec3) -> Vec3 {
     let p = random_in_unit_disk();
