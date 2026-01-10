@@ -1,4 +1,4 @@
-// use std::f32::consts::PI;
+use std::time::Instant;
 
 use glam::Vec3;
 use minifb::{Key, ScaleMode, Window, WindowOptions};
@@ -11,9 +11,10 @@ use rtiow::{
     rand_float, random_in_unit_disk, random_range, random_vec3, random_vec3_range, sample_square,
 };
 
-const WIDTH: usize = 1280;
+const WIDTH: usize = 800;
 const _HEIGHT: usize = 720;
-const MAX_DEPTH: u32 = 50;
+const MAX_DEPTH: u32 = 8;
+const SAMPLES_PER_PIXEL: u32 = 32;
 
 fn ray_color(ray: Ray, world: &HittableList, depth: u32) -> Vec3 {
     if depth <= 0 {
@@ -51,14 +52,13 @@ fn vec3_to_u32(color: Vec3) -> u32 {
     (r << 16) | (g << 8) | b
 }
 
-
 fn defocus_disk_sample(center: Vec3, defocus_disk_u: Vec3, defocus_disk_v: Vec3) -> Vec3 {
     let p = random_in_unit_disk();
     center + (p.x * defocus_disk_u) + (p.y * defocus_disk_v)
 }
 
 fn render_parallel(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
-    let samples_per_pixel = 500;
+    let samples_per_pixel = SAMPLES_PER_PIXEL;
     let pixel_sample_scale = 1.0 / samples_per_pixel as f32;
 
     buffer
@@ -87,8 +87,8 @@ fn render_parallel(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
                         direction: ray_direction,
                     };
                     pixel_color += ray_color(r, &world, MAX_DEPTH);
-                    *pixel = vec3_to_u32(pixel_color * pixel_sample_scale);
                 }
+                *pixel = vec3_to_u32(pixel_color * pixel_sample_scale);
             }
         });
 }
@@ -191,7 +191,10 @@ fn main() {
         let new_size = window.get_size();
 
         if redraw_needed {
+            let start = Instant::now(); 
             render_parallel(&mut buffer, &camera, &world);
+            let duration = start.elapsed(); 
+            println!("Render time: {:.2?}", duration); 
             redraw_needed = false;
         }
 
