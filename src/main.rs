@@ -85,6 +85,7 @@ fn render_parallel(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
                     let r = Ray {
                         origin: ray_origin,
                         direction: ray_direction,
+                        time: 0.0,
                     };
                     pixel_color += ray_color(r, &world, MAX_DEPTH);
                 }

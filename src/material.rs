@@ -19,6 +19,7 @@ impl Lambertian {
                 } else {
                     scatter_direction
                 },
+                time: _r_in.time,
             },
         ))
     }
@@ -36,6 +37,7 @@ impl Metal {
         let scattered = Ray {
             origin: rec.p,
             direction: reflected.normalize() + (self.fuzz * random_unit_vector()),
+            time: r_in.time,
         };
         if scattered.direction.dot(rec.normal) > 0.0 {
             Some((self.albedo, scattered))
@@ -81,6 +83,7 @@ impl Dielectric {
             Ray {
                 origin: rec.p,
                 direction: direction,
+                time: r_in.time,
             },
         ))
     }
