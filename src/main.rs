@@ -82,11 +82,8 @@ fn render_parallel(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
                         )
                     };
                     let ray_direction = pixel_center - ray_origin;
-                    let r = Ray {
-                        origin: ray_origin,
-                        direction: ray_direction,
-                        time: 0.0,
-                    };
+                    let r = Ray::new(ray_origin, ray_direction);
+
                     pixel_color += ray_color(r, &world, MAX_DEPTH);
                 }
                 *pixel = vec3_to_u32(pixel_color * pixel_sample_scale);
@@ -192,10 +189,10 @@ fn main() {
         let new_size = window.get_size();
 
         if redraw_needed {
-            let start = Instant::now(); 
+            let start = Instant::now();
             render_parallel(&mut buffer, &camera, &world);
-            let duration = start.elapsed(); 
-            println!("Render time: {:.2?}", duration); 
+            let duration = start.elapsed();
+            println!("Render time: {:.2?}", duration);
             redraw_needed = false;
         }
 
