@@ -9,13 +9,16 @@ pub fn random_range(min: f32, max: f32) -> f32 {
 }
 
 pub fn random_vec3() -> Vec3 {
-    Vec3::from_array(rand::random())    
+    Vec3::from_array(rand::random())
 }
 
 pub fn random_vec3_range(min: f32, max: f32) -> Vec3 {
-    Vec3::new(random_range(min, max), random_range(min, max), random_range(min, max))    
+    Vec3::new(
+        random_range(min, max),
+        random_range(min, max),
+        random_range(min, max),
+    )
 }
-
 
 pub fn random_unit_vector() -> Vec3 {
     loop {

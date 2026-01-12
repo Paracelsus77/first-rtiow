@@ -9,11 +9,19 @@ pub struct Camera {
     pub defocus_disk_v: Vec3,
     pub image_width: usize,
     pub image_height: usize,
-    pub defocus_angle: f32
+    pub defocus_angle: f32,
 }
 
 impl Camera {
-    pub fn new(image_width: usize, vfov: f32, lookfrom: Vec3, lookat: Vec3, vup: Vec3, defocus_angle:f32, focus_dist: f32) -> Self {
+    pub fn new(
+        image_width: usize,
+        vfov: f32,
+        lookfrom: Vec3,
+        lookat: Vec3,
+        vup: Vec3,
+        defocus_angle: f32,
+        focus_dist: f32,
+    ) -> Self {
         let aspect_ratio = 16.0 / 9.0f32;
 
         let image_height = ((image_width as f32 / aspect_ratio) as usize).max(1);

@@ -19,12 +19,12 @@ impl Interval {
     pub fn size(&self) -> f32 {
         self.max - self.min
     }
-    
+
     #[inline]
     pub fn contains(&self, x: f32) -> bool {
         self.min <= x && x <= self.max
     }
-    
+
     #[inline]
     pub fn surrounds(&self, x: f32) -> bool {
         self.min < x && x < self.max

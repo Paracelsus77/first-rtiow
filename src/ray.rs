@@ -14,7 +14,7 @@ impl Ray {
             direction,
             time: 0.0,
         }
-    }    
+    }
     pub fn with_time(mut self, time: f32) -> Self {
         self.time = time;
         self

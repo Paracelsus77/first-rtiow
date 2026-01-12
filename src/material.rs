@@ -76,10 +76,7 @@ impl Dielectric {
         };
 
         // let refracted = r_in.direction.normalize().refract(rec.normal, ri);
-        Some((
-            Vec3::ONE,
-            Ray::new( rec.p, direction),
-        ))
+        Some((Vec3::ONE, Ray::new(rec.p, direction)))
     }
 }
 
