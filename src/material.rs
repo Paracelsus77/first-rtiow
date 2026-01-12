@@ -12,15 +12,14 @@ impl Lambertian {
 
         Some((
             self.albedo,
-            Ray {
-                origin: rec.p,
-                direction: if scatter_direction.near_zero() {
+            Ray::new(
+                rec.p,
+                if scatter_direction.near_zero() {
                     rec.normal
                 } else {
                     scatter_direction
                 },
-                time: _r_in.time,
-            },
+            ),
         ))
     }
 }
@@ -34,11 +33,10 @@ pub struct Metal {
 impl Metal {
     fn scatter(&self, r_in: Ray, rec: &HitRecord) -> Option<(Vec3, Ray)> {
         let reflected = r_in.direction.reflect(rec.normal);
-        let scattered = Ray {
-            origin: rec.p,
-            direction: reflected.normalize() + (self.fuzz * random_unit_vector()),
-            time: r_in.time,
-        };
+        let scattered = Ray::new(
+            rec.p,
+            reflected.normalize() + (self.fuzz * random_unit_vector()),
+        );
         if scattered.direction.dot(rec.normal) > 0.0 {
             Some((self.albedo, scattered))
         } else {
@@ -80,11 +78,7 @@ impl Dielectric {
         // let refracted = r_in.direction.normalize().refract(rec.normal, ri);
         Some((
             Vec3::ONE,
-            Ray {
-                origin: rec.p,
-                direction: direction,
-                time: r_in.time,
-            },
+            Ray::new( rec.p, direction),
         ))
     }
 }
