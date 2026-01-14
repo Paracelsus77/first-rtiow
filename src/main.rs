@@ -7,7 +7,9 @@ use rayon::{
     slice::ParallelSliceMut,
 };
 use rtiow::{
-    Camera, Dielectric, Hittable, HittableList, Interval, Lambertian, Material, Metal, Primitive, Ray, Sphere, rand_float, random_in_unit_disk, random_range, random_vec3, random_vec3_range, sample_square
+    Camera, Dielectric, Hittable, HittableList, Interval, Lambertian, Material, Metal, Primitive,
+    Ray, Sphere, rand_float, random_in_unit_disk, random_range, random_vec3, random_vec3_range,
+    sample_square,
 };
 
 const WIDTH: usize = 800;

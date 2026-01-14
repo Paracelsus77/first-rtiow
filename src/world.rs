@@ -1,4 +1,4 @@
-use crate::{HitRecord, Hittable, Interval, Ray, Primitive};
+use crate::{HitRecord, Hittable, Interval, Primitive, Ray};
 
 pub struct HittableList {
     pub objects: Vec<Primitive>,

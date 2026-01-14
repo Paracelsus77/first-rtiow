@@ -53,7 +53,7 @@ impl Hittable for Sphere {
     }
 }
 
-pub enum Primitive{
+pub enum Primitive {
     Sphere(Sphere),
 }
 
