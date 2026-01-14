@@ -7,8 +7,7 @@ use rayon::{
     slice::ParallelSliceMut,
 };
 use rtiow::{
-    Camera, Dielectric, Hittable, HittableList, Interval, Lambertian, Material, Metal, Ray, Sphere,
-    rand_float, random_in_unit_disk, random_range, random_vec3, random_vec3_range, sample_square,
+    Camera, Dielectric, Hittable, HittableList, Interval, Lambertian, Material, Metal, Primitive, Ray, Sphere, rand_float, random_in_unit_disk, random_range, random_vec3, random_vec3_range, sample_square
 };
 
 const WIDTH: usize = 800;
@@ -109,13 +108,13 @@ fn main() {
     };
 
     // Ground
-    world.objects.push(Sphere {
+    world.objects.push(Primitive::Sphere(Sphere {
         center: Vec3::new(0.0, -1000.0, 0.0),
         radius: 1000.0,
         material: Material::Lambertian(Lambertian {
             albedo: Vec3::new(0.5, 0.5, 0.5),
         }),
-    });
+    }));
 
     for a in -11..11 {
         for b in -11..11 {
@@ -124,7 +123,7 @@ fn main() {
                 Vec3::new(a as f32 + 0.9 * rand_float(), 0.2, b as f32 + rand_float());
 
             if (sphere_center - Vec3::new(4.0, 0.2, 0.0)).length() > 0.9 {
-                world.objects.push(Sphere {
+                world.objects.push(Primitive::Sphere(Sphere {
                     center: sphere_center,
                     radius: 0.2,
                     material: match choose_material {
@@ -139,35 +138,35 @@ fn main() {
                             refraction_index: 1.5,
                         }),
                     },
-                })
+                }))
             }
         }
     }
 
-    world.objects.push(Sphere {
+    world.objects.push(Primitive::Sphere(Sphere {
         center: Vec3::new(0.0, 1.0, 0.0),
         radius: 1.0,
         material: Material::Dielectric(Dielectric {
             refraction_index: 1.5,
         }),
-    });
+    }));
 
-    world.objects.push(Sphere {
+    world.objects.push(Primitive::Sphere(Sphere {
         center: Vec3::new(-4.0, 1.0, 0.0),
         radius: 1.0,
         material: Material::Lambertian(Lambertian {
             albedo: Vec3::new(0.4, 0.2, 0.1),
         }),
-    });
+    }));
 
-    world.objects.push(Sphere {
+    world.objects.push(Primitive::Sphere(Sphere {
         center: Vec3::new(4.0, 1.0, 0.0),
         radius: 1.0,
         material: Material::Metal(Metal {
             albedo: Vec3::new(0.7, 0.6, 0.5),
             fuzz: 0.0,
         }),
-    });
+    }));
 
     let mut window = Window::new(
         "first program rtiow",

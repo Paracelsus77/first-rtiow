@@ -52,3 +52,15 @@ impl Hittable for Sphere {
         }
     }
 }
+
+pub enum Primitive{
+    Sphere(Sphere),
+}
+
+impl Hittable for Primitive {
+    fn hit(&self, r: Ray, t_ray: Interval) -> Option<HitRecord> {
+        match self {
+            Primitive::Sphere(sphere) => sphere.hit(r, t_ray),
+        }
+    }
+}

@@ -1,7 +1,7 @@
-use crate::{HitRecord, Hittable, Interval, Ray, Sphere};
+use crate::{HitRecord, Hittable, Interval, Ray, Primitive};
 
 pub struct HittableList {
-    pub objects: Vec<Sphere>,
+    pub objects: Vec<Primitive>,
 }
 
 impl Hittable for HittableList {
