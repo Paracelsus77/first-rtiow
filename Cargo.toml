@@ -3,6 +3,10 @@ name = "rtiow"
 version = "0.1.0"
 edition = "2024"
 
+[profile.release]
+opt-level = 3
+lto = "fat"
+
 [dependencies]
 glam = { version = "0.30.9", features=["rand"]}
 minifb = "0.28.0"

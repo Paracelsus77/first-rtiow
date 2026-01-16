@@ -58,6 +58,7 @@ pub enum Primitive {
 }
 
 impl Hittable for Primitive {
+    #[inline]
     fn hit(&self, r: Ray, t_ray: Interval) -> Option<HitRecord> {
         match self {
             Primitive::Sphere(sphere) => sphere.hit(r, t_ray),

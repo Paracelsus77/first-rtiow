@@ -88,6 +88,7 @@ pub enum Material {
 }
 
 impl Material {
+    #[inline]
     pub fn scatter(&self, r_in: Ray, rec: &HitRecord) -> Option<(Vec3, Ray)> {
         match self {
             Material::Lambertian(m) => m.scatter(r_in, rec),
