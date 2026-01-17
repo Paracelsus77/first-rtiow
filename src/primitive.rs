@@ -88,7 +88,8 @@ impl Hittable for Sphere {
 
 impl Hittable for MovingSphere {
     fn hit(&self, r: Ray, ray_t: Interval) -> Option<HitRecord> {
-        let oc = self.center - r.origin;
+        let current_center = self.at(r.time);
+        let oc = current_center - r.origin;
         let a = r.direction.length_squared();
         let h = r.direction.dot(oc);
         let c = oc.length_squared() - self.radius * self.radius;
@@ -112,7 +113,7 @@ impl Hittable for MovingSphere {
             };
 
             let p = r.at(t);
-            let outward_normal = (p - self.center) / self.radius;
+            let outward_normal = (p - current_center) / self.radius;
             let front_face = r.direction.dot(outward_normal) < 0.0;
             let normal = if front_face {
                 outward_normal

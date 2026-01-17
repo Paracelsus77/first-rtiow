@@ -19,7 +19,7 @@ impl Lambertian {
                 } else {
                     scatter_direction
                 },
-            ),
+            ).with_time(_r_in.time),
         ))
     }
 }
@@ -36,7 +36,7 @@ impl Metal {
         let scattered = Ray::new(
             rec.p,
             reflected.normalize() + (self.fuzz * random_unit_vector()),
-        );
+        ).with_time(r_in.time);
         if scattered.direction.dot(rec.normal) > 0.0 {
             Some((self.albedo, scattered))
         } else {
@@ -76,7 +76,7 @@ impl Dielectric {
         };
 
         // let refracted = r_in.direction.normalize().refract(rec.normal, ri);
-        Some((Vec3::ONE, Ray::new(rec.p, direction)))
+        Some((Vec3::ONE, Ray::new(rec.p, direction).with_time(r_in.time)))
     }
 }
 

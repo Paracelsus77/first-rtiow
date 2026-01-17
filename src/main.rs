@@ -83,7 +83,8 @@ fn render_parallel(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
                         )
                     };
                     let ray_direction = pixel_center - ray_origin;
-                    let r = Ray::new(ray_origin, ray_direction);
+                    let ray_time = rand_float();
+                    let r = Ray::new(ray_origin, ray_direction).with_time(ray_time);
 
                     pixel_color += ray_color(r, &world, MAX_DEPTH);
                 }
