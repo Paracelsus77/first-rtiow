@@ -10,7 +10,7 @@ pub struct Sphere {
 
 pub struct MovingSphere {
     pub center: Vec3,
-    pub end_center: Vec3,
+    pub offset: Vec3,
     pub radius: f32,
     pub material: Material,
 }
@@ -24,10 +24,10 @@ impl Sphere {
         }
     }
 
-    pub fn moving(self, end_center: Vec3) -> MovingSphere {
+    pub fn moving(self, offset: Vec3) -> MovingSphere {
         MovingSphere {
             center: self.center,
-            end_center,
+            offset,
             radius: self.radius,
             material: self.material,
         }
@@ -37,7 +37,7 @@ impl Sphere {
 impl MovingSphere {
     #[inline]
     pub fn at(&self, t: f32) -> Vec3 {
-        self.center + t * (self.end_center - self.center)
+        self.center + t * (self.offset)
     }
 }
 

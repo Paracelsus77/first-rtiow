@@ -8,7 +8,7 @@ use rayon::{
 };
 use rtiow::{
     Camera, Dielectric, Hittable, HittableList, Interval, Lambertian, Material, Metal, Primitive,
-    Ray, Sphere, primitive::MovingSphere, rand_float, random_in_unit_disk, random_range,
+    Ray, Sphere, rand_float, random_in_unit_disk, random_range,
     random_vec3, random_vec3_range, sample_square,
 };
 
@@ -71,8 +71,8 @@ fn render_parallel(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
                 for _ in 0..samples_per_pixel {
                     let offset = sample_square();
                     let pixel_center = camera.pixel00_loc
-                    + ((x as f32 + offset.x) * camera.pixel_delta_u)
-                    + ((y as f32 + offset.y) * camera.pixel_delta_v);
+                        + ((x as f32 + offset.x) * camera.pixel_delta_u)
+                        + ((y as f32 + offset.y) * camera.pixel_delta_v);
                     let ray_origin = if camera.defocus_angle <= 0.0 {
                         camera.center
                     } else {
@@ -111,13 +111,13 @@ fn main() {
     };
 
     // Ground
-    world.objects.push(Primitive::Sphere(Sphere {
-        center: Vec3::new(0.0, -1000.0, 0.0),
-        radius: 1000.0,
-        material: Material::Lambertian(Lambertian {
+    world.objects.push(Primitive::Sphere(Sphere::new(
+        Vec3::new(0.0, -1000.0, 0.0),
+        1000.0,
+        Material::Lambertian(Lambertian {
             albedo: Vec3::new(0.5, 0.5, 0.5),
         }),
-    }));
+    )));
 
     for a in -11..11 {
         for b in -11..11 {
@@ -126,59 +126,55 @@ fn main() {
                 Vec3::new(a as f32 + 0.9 * rand_float(), 0.2, b as f32 + rand_float());
 
             if (sphere_center - Vec3::new(4.0, 0.2, 0.0)).length() > 0.9 {
-                world.objects.push(match choose_material {
-                    0.0..0.8 => Primitive::MovingSphere(MovingSphere {
-                        center: sphere_center,
-                        radius: 0.2,
-                        material: Material::Lambertian(Lambertian {
+                let sphere_material = match choose_material {
+                    0.0..0.8 => Material::Lambertian(Lambertian {
                             albedo: random_vec3() * random_vec3(),
                         }),
-                        end_center: sphere_center + Vec3::new(0.0, random_range(0.0, 0.5), 0.0),
-                    }),
-                    0.8..0.95 => Primitive::Sphere(Sphere {
-                        center: sphere_center,
-                        radius: 0.2,
-                        material: Material::Metal(Metal {
+                    0.8..0.95 => Material::Metal(Metal {
                             albedo: random_vec3_range(0.5, 1.0),
                             fuzz: random_range(0.0, 0.5),
                         }),
-                    }),
-                    _ => Primitive::Sphere(Sphere {
-                        center: sphere_center,
-                        radius: 0.2,
-                        material: Material::Dielectric(Dielectric {
+                    _ => Material::Dielectric(Dielectric {
                             refraction_index: 1.5,
                         }),
-                    }),
-                })
+                };
+
+                let sphere = Sphere::new(sphere_center, 0.2, sphere_material);
+
+                if choose_material < 0.8 {
+                    let motion_vector = Vec3::new(0.0, random_range(0.0, 0.5), 0.0);
+                    world.objects.push(Primitive::MovingSphere(sphere.moving(motion_vector)));
+                } else {
+                    world.objects.push(Primitive::Sphere(sphere));
+                }
             }
         }
     }
 
-    world.objects.push(Primitive::Sphere(Sphere {
-        center: Vec3::new(0.0, 1.0, 0.0),
-        radius: 1.0,
-        material: Material::Dielectric(Dielectric {
+    world.objects.push(Primitive::Sphere(Sphere::new(
+        Vec3::new(0.0, 1.0, 0.0),
+        1.0,
+        Material::Dielectric(Dielectric {
             refraction_index: 1.5,
         }),
-    }));
+    )));
 
-    world.objects.push(Primitive::Sphere(Sphere {
-        center: Vec3::new(-4.0, 1.0, 0.0),
-        radius: 1.0,
-        material: Material::Lambertian(Lambertian {
+    world.objects.push(Primitive::Sphere(Sphere::new(
+        Vec3::new(-4.0, 1.0, 0.0),
+        1.0,
+        Material::Lambertian(Lambertian {
             albedo: Vec3::new(0.4, 0.2, 0.1),
         }),
-    }));
+    )));
 
-    world.objects.push(Primitive::Sphere(Sphere {
-        center: Vec3::new(4.0, 1.0, 0.0),
-        radius: 1.0,
-        material: Material::Metal(Metal {
+    world.objects.push(Primitive::Sphere(Sphere::new(
+        Vec3::new(4.0, 1.0, 0.0),
+        1.0,
+        Material::Metal(Metal {
             albedo: Vec3::new(0.7, 0.6, 0.5),
             fuzz: 0.0,
         }),
-    }));
+    )));
 
     let mut window = Window::new(
         "first program rtiow",
