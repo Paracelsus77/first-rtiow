@@ -8,14 +8,14 @@ use rayon::{
 };
 use rtiow::{
     Camera, Dielectric, Hittable, HittableList, Interval, Lambertian, Material, Metal, Primitive,
-    Ray, Sphere, rand_float, random_in_unit_disk, random_range, random_vec3, random_vec3_range,
-    sample_square,
+    Ray, Sphere, primitive::MovingSphere, rand_float, random_in_unit_disk, random_range,
+    random_vec3, random_vec3_range, sample_square,
 };
 
 const WIDTH: usize = 800;
 const _HEIGHT: usize = 720;
 const MAX_DEPTH: u32 = 8;
-const SAMPLES_PER_PIXEL: u32 = 32;
+const SAMPLES_PER_PIXEL: u32 = 100;
 
 fn ray_color(ray: Ray, world: &HittableList, depth: u32) -> Vec3 {
     if depth <= 0 {
@@ -71,8 +71,8 @@ fn render_parallel(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
                 for _ in 0..samples_per_pixel {
                     let offset = sample_square();
                     let pixel_center = camera.pixel00_loc
-                        + ((x as f32 + offset.x) * camera.pixel_delta_u)
-                        + ((y as f32 + offset.y) * camera.pixel_delta_v);
+                    + ((x as f32 + offset.x) * camera.pixel_delta_u)
+                    + ((y as f32 + offset.y) * camera.pixel_delta_v);
                     let ray_origin = if camera.defocus_angle <= 0.0 {
                         camera.center
                     } else {
@@ -126,22 +126,31 @@ fn main() {
                 Vec3::new(a as f32 + 0.9 * rand_float(), 0.2, b as f32 + rand_float());
 
             if (sphere_center - Vec3::new(4.0, 0.2, 0.0)).length() > 0.9 {
-                world.objects.push(Primitive::Sphere(Sphere {
-                    center: sphere_center,
-                    radius: 0.2,
-                    material: match choose_material {
-                        0.0..0.8 => Material::Lambertian(Lambertian {
+                world.objects.push(match choose_material {
+                    0.0..0.8 => Primitive::MovingSphere(MovingSphere {
+                        center: sphere_center,
+                        radius: 0.2,
+                        material: Material::Lambertian(Lambertian {
                             albedo: random_vec3() * random_vec3(),
                         }),
-                        0.8..0.95 => Material::Metal(Metal {
+                        end_center: sphere_center + Vec3::new(0.0, random_range(0.0, 0.5), 0.0),
+                    }),
+                    0.8..0.95 => Primitive::Sphere(Sphere {
+                        center: sphere_center,
+                        radius: 0.2,
+                        material: Material::Metal(Metal {
                             albedo: random_vec3_range(0.5, 1.0),
                             fuzz: random_range(0.0, 0.5),
                         }),
-                        _ => Material::Dielectric(Dielectric {
+                    }),
+                    _ => Primitive::Sphere(Sphere {
+                        center: sphere_center,
+                        radius: 0.2,
+                        material: Material::Dielectric(Dielectric {
                             refraction_index: 1.5,
                         }),
-                    },
-                }))
+                    }),
+                })
             }
         }
     }

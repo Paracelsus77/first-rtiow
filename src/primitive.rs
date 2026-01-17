@@ -37,7 +37,7 @@ impl Sphere {
 impl MovingSphere {
     #[inline]
     pub fn at(&self, t: f32) -> Vec3 {
-        self.center + t * self.end_center
+        self.center + t * (self.end_center - self.center)
     }
 }
 
@@ -134,6 +134,7 @@ impl Hittable for MovingSphere {
 
 pub enum Primitive {
     Sphere(Sphere),
+    MovingSphere(MovingSphere),
 }
 
 impl Hittable for Primitive {
@@ -141,6 +142,7 @@ impl Hittable for Primitive {
     fn hit(&self, r: Ray, t_ray: Interval) -> Option<HitRecord> {
         match self {
             Primitive::Sphere(sphere) => sphere.hit(r, t_ray),
+            Primitive::MovingSphere(sphere) => sphere.hit(r, t_ray),
         }
     }
 }
