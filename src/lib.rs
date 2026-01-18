@@ -6,6 +6,7 @@ pub mod primitive;
 pub mod ray;
 pub mod utils;
 pub mod world;
+pub mod aabb;
 
 pub use camera::Camera;
 pub use hittable::{HitRecord, Hittable};
