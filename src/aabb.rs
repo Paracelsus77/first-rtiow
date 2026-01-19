@@ -44,9 +44,11 @@ impl Aabb {
     pub fn hit(&self, r: Ray, ray_t: Interval) -> bool {
         // https://tavianator.com/2011/ray_box.html 
         // Fast, Branchless Ray/Bounding Box Intersections implementation suggested by Gemini
+        // actual implementation model available from Ray Tracing Gems II 
+        // chapter 2 Ray Axis-Aligned Bounding Box Intersection
 
         let ray_origin = Vec3A::from(r.origin);
-        let ray_inv_dir = Vec3A::from(Vec3::ONE / r.direction);
+        let ray_inv_dir = Vec3A::from(r.inv_direction);
 
         let box_min = Vec3A::new(self.x.min, self.y.min, self.z.min);
         let box_max = Vec3A::new(self.x.max, self.y.max, self.z.max);

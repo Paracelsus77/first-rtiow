@@ -4,6 +4,7 @@ use glam::Vec3;
 pub struct Ray {
     pub origin: Vec3,
     pub direction: Vec3,
+    pub inv_direction: Vec3,
     pub time: f32,
 }
 
@@ -12,6 +13,7 @@ impl Ray {
         Ray {
             origin,
             direction,
+            inv_direction: Vec3::ONE / direction,
             time: 0.0,
         }
     }
