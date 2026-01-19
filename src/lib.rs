@@ -19,3 +19,4 @@ pub use utils::{
     random_unit_vector, random_vec3, random_vec3_range, sample_square,
 };
 pub use world::HittableList;
+pub use aabb::Aabb;
