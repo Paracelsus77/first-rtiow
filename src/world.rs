@@ -1,4 +1,4 @@
-use crate::{HitRecord, Hittable, Interval, Primitive, Ray};
+use crate::{Aabb, HitRecord, Hittable, Interval, Primitive, Ray};
 
 pub struct HittableList {
     pub objects: Vec<Primitive>,
@@ -23,5 +23,9 @@ impl Hittable for HittableList {
         }
 
         closest_hit
+    }
+    
+    fn bounding_box(&self) -> Aabb {
+        todo!()
     }
 }

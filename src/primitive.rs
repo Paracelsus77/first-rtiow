@@ -1,6 +1,6 @@
 use glam::Vec3;
 
-use crate::{HitRecord, Hittable, Interval, Material, Ray};
+use crate::{Aabb, HitRecord, Hittable, Interval, Material, Ray};
 
 pub struct Sphere {
     pub center: Vec3,
@@ -21,6 +21,7 @@ impl Sphere {
             center,
             radius,
             material,
+
         }
     }
 
@@ -84,6 +85,12 @@ impl Hittable for Sphere {
             })
         }
     }
+    
+    fn bounding_box(&self) -> Aabb {
+        let rvec = Vec3::splat(self.radius);
+
+        Aabb::from_points(self.center-rvec, self.center+rvec)
+    }
 }
 
 impl Hittable for MovingSphere {
@@ -130,6 +137,14 @@ impl Hittable for MovingSphere {
             })
         }
     }
+    
+    fn bounding_box(&self) -> Aabb {
+        let rvec = Vec3::splat(self.radius);
+        let center2 = self.center + self.offset; 
+        let bbox2 = Aabb::from_points(center2-rvec, center2+rvec);
+        Aabb::union( Aabb::from_points(self.center-rvec, self.center+rvec), bbox2)
+        
+    }
 }
 
 pub enum Primitive {
@@ -144,5 +159,9 @@ impl Hittable for Primitive {
             Primitive::Sphere(sphere) => sphere.hit(r, t_ray),
             Primitive::MovingSphere(sphere) => sphere.hit(r, t_ray),
         }
+    }
+    
+    fn bounding_box(&self) -> Aabb {
+        todo!()
     }
 }

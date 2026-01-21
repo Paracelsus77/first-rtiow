@@ -1,6 +1,6 @@
 use glam::Vec3;
 
-use crate::{Interval, Material, Ray};
+use crate::{Interval, Material, Ray, Aabb};
 
 pub struct HitRecord {
     pub p: Vec3,
@@ -12,4 +12,5 @@ pub struct HitRecord {
 
 pub trait Hittable {
     fn hit(&self, r: Ray, t_ray: Interval) -> Option<HitRecord>;
+    fn bounding_box(&self) -> Aabb;
 }
