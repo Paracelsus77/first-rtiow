@@ -8,6 +8,10 @@ pub fn random_range(min: f32, max: f32) -> f32 {
     rand::random_range(min..max)
 }
 
+pub fn random_range_u32(min: u32, max: u32) -> u32 {
+    rand::random_range(min..=max)
+}
+
 pub fn random_vec3() -> Vec3 {
     Vec3::from_array(rand::random())
 }

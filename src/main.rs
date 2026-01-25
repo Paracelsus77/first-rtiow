@@ -18,7 +18,7 @@ const MAX_DEPTH: u32 = 8;
 const SAMPLES_PER_PIXEL: u32 = 100;
 
 fn ray_color(ray: Ray, world: &HittableList, depth: u32) -> Vec3 {
-    if depth <= 0 {
+    if depth == 0 {
         Vec3::ZERO
     } else if let Some(hit) = world.hit(ray, Interval::new(0.001, f32::INFINITY)) {
         if let Some((attenuation, direction)) = hit.mat.scatter(ray, &hit) {
@@ -86,7 +86,7 @@ fn render_parallel(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
                     let ray_time = rand_float();
                     let r = Ray::new(ray_origin, ray_direction).with_time(ray_time);
 
-                    pixel_color += ray_color(r, &world, MAX_DEPTH);
+                    pixel_color += ray_color(r, world, MAX_DEPTH);
                 }
                 *pixel = vec3_to_u32(pixel_color * pixel_sample_scale);
             }

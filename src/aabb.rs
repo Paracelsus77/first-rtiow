@@ -2,6 +2,7 @@ use glam::{Vec3, Vec3A};
 
 use crate::{Interval, Ray};
 
+#[derive(Copy, Clone, Debug)]
 pub struct Aabb {
     pub x: Interval,
     pub y: Interval,
@@ -63,5 +64,13 @@ impl Aabb {
         let t_exit = t_max_vec.min_element().min(ray_t.min);
 
         t_enter < t_exit
+    }
+
+    pub fn axis(&self, a: u32) -> Interval {
+        match a {
+            0 => self.x,
+            1 => self.y,
+            _ => self.z
+        }
     }
 }
