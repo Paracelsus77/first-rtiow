@@ -8,8 +8,8 @@ use rayon::{
 };
 use rtiow::{
     Camera, Dielectric, Hittable, HittableList, Interval, Lambertian, Material, Metal, Primitive,
-    Ray, Sphere, rand_float, random_in_unit_disk, random_range,
-    random_vec3, random_vec3_range, sample_square,
+    Ray, Sphere, rand_float, random_in_unit_disk, random_range, random_vec3, random_vec3_range,
+    sample_square,
 };
 
 const WIDTH: usize = 800;
@@ -128,22 +128,24 @@ fn main() {
             if (sphere_center - Vec3::new(4.0, 0.2, 0.0)).length() > 0.9 {
                 let sphere_material = match choose_material {
                     0.0..0.8 => Material::Lambertian(Lambertian {
-                            albedo: random_vec3() * random_vec3(),
-                        }),
+                        albedo: random_vec3() * random_vec3(),
+                    }),
                     0.8..0.95 => Material::Metal(Metal {
-                            albedo: random_vec3_range(0.5, 1.0),
-                            fuzz: random_range(0.0, 0.5),
-                        }),
+                        albedo: random_vec3_range(0.5, 1.0),
+                        fuzz: random_range(0.0, 0.5),
+                    }),
                     _ => Material::Dielectric(Dielectric {
-                            refraction_index: 1.5,
-                        }),
+                        refraction_index: 1.5,
+                    }),
                 };
 
                 let sphere = Sphere::new(sphere_center, 0.2, sphere_material);
 
                 if choose_material < 0.8 {
                     let motion_vector = Vec3::new(0.0, random_range(0.0, 0.5), 0.0);
-                    world.objects.push(Primitive::MovingSphere(sphere.moving(motion_vector)));
+                    world
+                        .objects
+                        .push(Primitive::MovingSphere(sphere.moving(motion_vector)));
                 } else {
                     world.objects.push(Primitive::Sphere(sphere));
                 }

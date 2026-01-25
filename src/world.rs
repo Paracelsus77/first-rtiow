@@ -24,7 +24,7 @@ impl Hittable for HittableList {
 
         closest_hit
     }
-    
+
     fn bounding_box(&self) -> Aabb {
         todo!()
     }

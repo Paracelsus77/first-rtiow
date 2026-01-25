@@ -43,9 +43,9 @@ impl Aabb {
     }
 
     pub fn hit(&self, r: Ray, ray_t: Interval) -> bool {
-        // https://tavianator.com/2011/ray_box.html 
+        // https://tavianator.com/2011/ray_box.html
         // Fast, Branchless Ray/Bounding Box Intersections implementation suggested by Gemini
-        // actual implementation model available from Ray Tracing Gems II 
+        // actual implementation model available from Ray Tracing Gems II
         // chapter 2 Ray Axis-Aligned Bounding Box Intersection
 
         let ray_origin = Vec3A::from(r.origin);
@@ -59,7 +59,7 @@ impl Aabb {
 
         let t_min_vec = t1.min(t2);
         let t_max_vec = t1.max(t2);
-        
+
         let t_enter = t_min_vec.max_element().max(ray_t.min);
         let t_exit = t_max_vec.min_element().min(ray_t.min);
 
@@ -70,7 +70,7 @@ impl Aabb {
         match a {
             0 => self.x,
             1 => self.y,
-            _ => self.z
+            _ => self.z,
         }
     }
 }

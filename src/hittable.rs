@@ -1,6 +1,6 @@
 use glam::Vec3;
 
-use crate::{Interval, Material, Ray, Aabb};
+use crate::{Aabb, Interval, Material, Ray};
 
 pub struct HitRecord {
     pub p: Vec3,

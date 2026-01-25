@@ -35,10 +35,10 @@ impl Interval {
     }
 
     pub fn expand(&self, delta: f32) -> Self {
-        let padding = delta/2.0;
-        Self::new(self.min-padding, self.max + padding)
+        let padding = delta / 2.0;
+        Self::new(self.min - padding, self.max + padding)
     }
-    
+
     pub const EMPTY: Self = Self {
         min: f32::INFINITY,
         max: f32::NEG_INFINITY,

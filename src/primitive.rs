@@ -21,7 +21,6 @@ impl Sphere {
             center,
             radius,
             material,
-
         }
     }
 
@@ -85,11 +84,11 @@ impl Hittable for Sphere {
             })
         }
     }
-    
+
     fn bounding_box(&self) -> Aabb {
         let rvec = Vec3::splat(self.radius);
 
-        Aabb::from_points(self.center-rvec, self.center+rvec)
+        Aabb::from_points(self.center - rvec, self.center + rvec)
     }
 }
 
@@ -137,13 +136,15 @@ impl Hittable for MovingSphere {
             })
         }
     }
-    
+
     fn bounding_box(&self) -> Aabb {
         let rvec = Vec3::splat(self.radius);
-        let center2 = self.center + self.offset; 
-        let bbox2 = Aabb::from_points(center2-rvec, center2+rvec);
-        Aabb::union( Aabb::from_points(self.center-rvec, self.center+rvec), bbox2)
-        
+        let center2 = self.center + self.offset;
+        let bbox2 = Aabb::from_points(center2 - rvec, center2 + rvec);
+        Aabb::union(
+            Aabb::from_points(self.center - rvec, self.center + rvec),
+            bbox2,
+        )
     }
 }
 
@@ -160,7 +161,7 @@ impl Hittable for Primitive {
             Primitive::MovingSphere(sphere) => sphere.hit(r, t_ray),
         }
     }
-    
+
     fn bounding_box(&self) -> Aabb {
         todo!()
     }
