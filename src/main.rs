@@ -22,7 +22,7 @@ fn ray_color(ray: Ray, world: &HittableList, depth: u32) -> Vec3 {
         Vec3::ZERO
     } else if let Some(hit) = world.hit(ray, Interval::new(0.001, f32::INFINITY)) {
         if let Some((attenuation, direction)) = hit.mat.scatter(ray, &hit) {
-            attenuation * ray_color(direction, &world, depth - 1)
+            attenuation * ray_color(direction, world, depth - 1)
         } else {
             Vec3::ZERO
         }
