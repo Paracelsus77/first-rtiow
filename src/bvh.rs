@@ -50,16 +50,21 @@ impl BvhNode {
             right: Box::new(right),
         }
     }
-   
+
     pub fn hit(&self, r: Ray, t_ray: Interval, primitives: &[Primitive]) -> Option<HitRecord> {
         if !self.bounding_box().hit(r, t_ray) {
             return None;
-        } 
+        }
         match self {
-            BvhNode::Leaf { bbox:_, object_offset } => {
-                primitives[*object_offset].hit(r, t_ray)
-            },
-            BvhNode::Interior { bbox: _, left, right } => {
+            BvhNode::Leaf {
+                bbox: _,
+                object_offset,
+            } => primitives[*object_offset].hit(r, t_ray),
+            BvhNode::Interior {
+                bbox: _,
+                left,
+                right,
+            } => {
                 let hit_left = left.hit(r, t_ray, primitives);
                 let mut t_max_for_right = t_ray.max;
                 if let Some(ref rec) = hit_left {
@@ -73,10 +78,8 @@ impl BvhNode {
                 } else {
                     hit_left
                 }
-
-            },
+            }
         }
-        
     }
 }
 

@@ -7,7 +7,9 @@ use rayon::{
     slice::ParallelSliceMut,
 };
 use rtiow::{
-    Camera, Dielectric, Hittable, HittableList, Interval, Lambertian, Material, Metal, Primitive, Ray, Sphere, bvh::BvhNode, rand_float, random_in_unit_disk, random_range, random_vec3, random_vec3_range, sample_square
+    Camera, Dielectric, HittableList, Interval, Lambertian, Material, Metal, Primitive, Ray,
+    Sphere, bvh::BvhNode, rand_float, random_in_unit_disk, random_range, random_vec3,
+    random_vec3_range, sample_square,
 };
 
 const WIDTH: usize = 800;
@@ -15,26 +17,14 @@ const _HEIGHT: usize = 720;
 const MAX_DEPTH: u32 = 8;
 const SAMPLES_PER_PIXEL: u32 = 100;
 
-fn ray_color(ray: Ray, world: &HittableList, depth: u32) -> Vec3 {
+fn ray_color_bvh(ray: Ray, primitives: &HittableList, bvh: &BvhNode, depth: u32) -> Vec3 {
     if depth == 0 {
         Vec3::ZERO
-    } else if let Some(hit) = world.hit(ray, Interval::new(0.001, f32::INFINITY)) {
-        if let Some((attenuation, direction)) = hit.mat.scatter(ray, &hit) {
-            attenuation * ray_color(direction, world, depth - 1)
-        } else {
-            Vec3::ZERO
-        }
-    } else {
-        let unit_direction = ray.direction.normalize();
-        let a = 0.5 * (unit_direction.y + 1.0);
-        Vec3::ONE.lerp(Vec3::new(0.5, 0.7, 1.0), a)
-    }
-}
-
-fn ray_color_bvh(ray: Ray, primitives: &HittableList, bvh: &BvhNode, depth:u32) -> Vec3 {
-    if depth == 0 {
-        Vec3::ZERO
-    } else if let Some(hit) = bvh.hit(ray, Interval::new(0.001, f32::INFINITY), &primitives.objects) {
+    } else if let Some(hit) = bvh.hit(
+        ray,
+        Interval::new(0.001, f32::INFINITY),
+        &primitives.objects,
+    ) {
         if let Some((attenuation, direction)) = hit.mat.scatter(ray, &hit) {
             attenuation * ray_color_bvh(direction, primitives, bvh, depth - 1)
         } else {
