@@ -7,9 +7,7 @@ use rayon::{
     slice::ParallelSliceMut,
 };
 use rtiow::{
-    Camera, Dielectric, Hittable, HittableList, Interval, Lambertian, Material, Metal, Primitive,
-    Ray, Sphere, rand_float, random_in_unit_disk, random_range, random_vec3, random_vec3_range,
-    sample_square,
+    Camera, Dielectric, Hittable, HittableList, Interval, Lambertian, Material, Metal, Primitive, Ray, Sphere, bvh::BvhNode, rand_float, random_in_unit_disk, random_range, random_vec3, random_vec3_range, sample_square
 };
 
 const WIDTH: usize = 800;
@@ -23,6 +21,22 @@ fn ray_color(ray: Ray, world: &HittableList, depth: u32) -> Vec3 {
     } else if let Some(hit) = world.hit(ray, Interval::new(0.001, f32::INFINITY)) {
         if let Some((attenuation, direction)) = hit.mat.scatter(ray, &hit) {
             attenuation * ray_color(direction, world, depth - 1)
+        } else {
+            Vec3::ZERO
+        }
+    } else {
+        let unit_direction = ray.direction.normalize();
+        let a = 0.5 * (unit_direction.y + 1.0);
+        Vec3::ONE.lerp(Vec3::new(0.5, 0.7, 1.0), a)
+    }
+}
+
+fn ray_color_bvh(ray: Ray, primitives: &HittableList, bvh: &BvhNode, depth:u32) -> Vec3 {
+    if depth == 0 {
+        Vec3::ZERO
+    } else if let Some(hit) = bvh.hit(ray, Interval::new(0.001, f32::INFINITY), &primitives.objects) {
+        if let Some((attenuation, direction)) = hit.mat.scatter(ray, &hit) {
+            attenuation * ray_color_bvh(direction, primitives, bvh, depth - 1)
         } else {
             Vec3::ZERO
         }
@@ -58,7 +72,7 @@ fn defocus_disk_sample(center: Vec3, defocus_disk_u: Vec3, defocus_disk_v: Vec3)
     center + (p.x * defocus_disk_u) + (p.y * defocus_disk_v)
 }
 
-fn render_parallel(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
+fn render_parallel(buffer: &mut [u32], camera: &Camera, world: &HittableList, bvh: &BvhNode) {
     let samples_per_pixel = SAMPLES_PER_PIXEL;
     let pixel_sample_scale = 1.0 / samples_per_pixel as f32;
 
@@ -86,7 +100,7 @@ fn render_parallel(buffer: &mut [u32], camera: &Camera, world: &HittableList) {
                     let ray_time = rand_float();
                     let r = Ray::new(ray_origin, ray_direction).with_time(ray_time);
 
-                    pixel_color += ray_color(r, world, MAX_DEPTH);
+                    pixel_color += ray_color_bvh(r, world, bvh, MAX_DEPTH);
                 }
                 *pixel = vec3_to_u32(pixel_color * pixel_sample_scale);
             }
@@ -178,6 +192,8 @@ fn main() {
         }),
     )));
 
+    let bvh = BvhNode::new(&mut world.objects, 0);
+
     let mut window = Window::new(
         "first program rtiow",
         camera.image_width,
@@ -199,7 +215,7 @@ fn main() {
 
         if redraw_needed {
             let start = Instant::now();
-            render_parallel(&mut buffer, &camera, &world);
+            render_parallel(&mut buffer, &camera, &world, &bvh);
             let duration = start.elapsed();
             println!("Render time: {:.2?}", duration);
             redraw_needed = false;

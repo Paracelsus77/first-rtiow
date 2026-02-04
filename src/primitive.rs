@@ -163,6 +163,9 @@ impl Hittable for Primitive {
     }
 
     fn bounding_box(&self) -> Aabb {
-        todo!()
+        match self {
+            Primitive::Sphere(sphere) => sphere.bounding_box(),
+            Primitive::MovingSphere(sphere) => sphere.bounding_box(),
+        }
     }
 }

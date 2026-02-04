@@ -16,6 +16,10 @@ impl BvhNode {
     pub fn new(objects: &mut [Primitive], start_index: usize) -> Self {
         let span = objects.len();
 
+        if span == 0 {
+            panic!("BvhNode::new called with empty list!");
+        }
+
         if span == 1 {
             return BvhNode::Leaf {
                 bbox: objects[0].bounding_box(),
@@ -47,8 +51,8 @@ impl BvhNode {
         }
     }
    
-    fn hit(&self, r: Ray, t_ray: Interval, primitives: &[Primitive]) -> Option<HitRecord> {
-        if self.bounding_box().hit(r, t_ray) {
+    pub fn hit(&self, r: Ray, t_ray: Interval, primitives: &[Primitive]) -> Option<HitRecord> {
+        if !self.bounding_box().hit(r, t_ray) {
             return None;
         } 
         match self {

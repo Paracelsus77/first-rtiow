@@ -61,7 +61,7 @@ impl Aabb {
         let t_max_vec = t1.max(t2);
 
         let t_enter = t_min_vec.max_element().max(ray_t.min);
-        let t_exit = t_max_vec.min_element().min(ray_t.min);
+        let t_exit = t_max_vec.min_element().min(ray_t.max);
 
         t_enter < t_exit
     }
