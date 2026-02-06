@@ -1,4 +1,4 @@
-use crate::{Aabb, HitRecord, Hittable, Interval, Primitive, Ray, random_range_u32};
+use crate::{Aabb, HitRecord, Hittable, Interval, Primitive, Ray};
 
 pub enum BvhNode {
     Leaf {
@@ -27,7 +27,16 @@ impl BvhNode {
             };
         }
 
-        let axis = random_range_u32(0, 2);
+        /* let mut bbox = objects[0].bounding_box();
+        for i in 1..span {
+            bbox = Aabb::union(bbox, objects[i].bounding_box())
+        } */
+
+        let bbox = objects
+            .iter()
+            .fold(Aabb::EMPTY, |acc, a| Aabb::union(acc, a.bounding_box()));
+
+        let axis = bbox.longest_axis();
         let comparator = |a: &Primitive, b: &Primitive| {
             let min_a = a.bounding_box().axis(axis).min;
             let min_b = b.bounding_box().axis(axis).min;

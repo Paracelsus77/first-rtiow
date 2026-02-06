@@ -73,4 +73,22 @@ impl Aabb {
             _ => self.z,
         }
     }
+
+    pub fn longest_axis(&self) -> u32 {
+        let x_len = self.x.size();
+        let y_len = self.y.size();
+        let z_len = self.z.size();
+
+        if x_len > y_len {
+            if x_len > z_len { 0 } else { 2 }
+        } else {
+            if y_len > z_len { 1 } else { 2 }
+        }
+    }
+
+    pub const EMPTY: Self = Self {
+        x: Interval::EMPTY,
+        y: Interval::EMPTY,
+        z: Interval::EMPTY,
+    };
 }
