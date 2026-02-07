@@ -27,11 +27,6 @@ impl BvhNode {
             };
         }
 
-        /* let mut bbox = objects[0].bounding_box();
-        for i in 1..span {
-            bbox = Aabb::union(bbox, objects[i].bounding_box())
-        } */
-
         let bbox = objects
             .iter()
             .fold(Aabb::EMPTY, |acc, a| Aabb::union(acc, a.bounding_box()));

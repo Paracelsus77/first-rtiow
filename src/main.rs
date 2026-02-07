@@ -145,14 +145,7 @@ fn main() {
 
                 let sphere = Sphere::new(sphere_center, 0.2, sphere_material);
 
-                if choose_material < 0.8 {
-                    let motion_vector = Vec3::new(0.0, random_range(0.0, 0.5), 0.0);
-                    world
-                        .objects
-                        .push(Primitive::MovingSphere(sphere.moving(motion_vector)));
-                } else {
-                    world.objects.push(Primitive::Sphere(sphere));
-                }
+                world.objects.push(Primitive::Sphere(sphere));
             }
         }
     }
